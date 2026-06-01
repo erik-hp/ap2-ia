@@ -1,0 +1,6 @@
+{
+  "include": ["src", "notebooks"],
+  "extraPaths": ["src"],
+  "reportMissingImports": "warning",
+  "reportMissingModuleSource": "none"
+}
