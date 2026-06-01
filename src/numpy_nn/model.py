@@ -22,8 +22,26 @@ class NumpyMLP:
             self.params[f"W{i}"] = rng.normal(0.0, np.sqrt(2.0 / fan_in), size=(fan_in, fan_out))
             self.params[f"b{i}"] = np.zeros((1, fan_out))
 
+    def _prepare_input(self, x: np.ndarray) -> np.ndarray:
+        expected_features = self.layer_sizes[0]
+        if x.ndim != 2:
+            x = x.reshape(x.shape[0], -1)
+
+        if x.shape[1] == expected_features:
+            return x
+
+        # O PathMNIST 28x28 pode chegar achatado como RGB: 28*28*3 = 2352.
+        # Como a Etapa 1 pede entrada 784, convertemos para grayscale aqui.
+        if x.shape[1] == expected_features * 3:
+            return x.reshape(x.shape[0], expected_features, 3).mean(axis=2)
+
+        raise ValueError(
+            f"Input has {x.shape[1]} features, but model expects {expected_features} "
+            f"(or {expected_features * 3} for flattened RGB input)."
+        )
+
     def forward(self, x: np.ndarray) -> tuple[np.ndarray, list[dict[str, np.ndarray]]]:
-        a = x
+        a = self._prepare_input(x)
         caches: list[dict[str, np.ndarray]] = []
         n_layers = len(self.layer_sizes) - 1
 
