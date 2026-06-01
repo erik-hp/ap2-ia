@@ -1,0 +1,10 @@
+torch
+torchvision
+medmnist==3.0.2
+matplotlib
+seaborn
+scikit-learn
+grad-cam==1.5.2
+pandas
+tqdm
+jupyter
