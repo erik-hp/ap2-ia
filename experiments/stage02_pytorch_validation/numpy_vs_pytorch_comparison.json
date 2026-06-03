@@ -1,0 +1,6 @@
+{
+  "numpy_final_val_acc": 0.40013994402239106,
+  "torch_final_val_acc": 0.38994401693344116,
+  "final_accuracy_diff_pp": 1.0195927088949897,
+  "criterion_met_diff_le_2pp": true
+}

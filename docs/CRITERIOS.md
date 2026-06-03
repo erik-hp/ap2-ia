@@ -20,8 +20,8 @@ Este arquivo liga cada exigencia da rubrica aos arquivos do projeto. Os resultad
 
 ## Etapas
 
-1. MLP NumPy: `notebooks/01_numpy_mlp.ipynb`, `src/numpy_nn/`, `experiments/stage01_numpy/gradient_check.json`.
-2. Validacao PyTorch: `notebooks/02_pytorch_validation.ipynb`, `experiments/stage02_pytorch_validation/numpy_vs_pytorch_comparison.json`, `pathmnist_224_pipeline_check.json`.
+1. MLP NumPy: `notebooks/01_numpy_mlp.ipynb`, `src/numpy_nn/`, `experiments/stage01_numpy/gradient_check.json`. Resultado registrado: gradient check `5.842521e-09`, abaixo de `1e-5`.
+2. Validacao PyTorch: `notebooks/02_pytorch_validation.ipynb`, `experiments/stage02_pytorch_validation/numpy_vs_pytorch_comparison.json`, `pathmnist_224_pipeline_check.json`. Resultado registrado: diferenca NumPy vs PyTorch de `1.019593` p.p., abaixo do limite de 2 p.p.
 3. CNNs, ViT e grid: `notebooks/03_cnns_and_vit.ipynb`, `src/models/`, `experiments/stage03_experiment_manifest.json`, `experiments/stage03_best_by_run.csv`.
 4. XAI: `notebooks/04_xai.ipynb`, `src/xai/`, `outputs/xai/`.
 5. Modelo final: `notebooks/05_final_model.ipynb`, `experiments/final/test_metrics.json`, `test_classification_report.csv`, `test_confusion_matrix.csv`.

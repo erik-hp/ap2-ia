@@ -1,0 +1,6 @@
+{
+  "final_val_acc": 0.40013994402239106,
+  "final_loss_train": 1.5917891175172407,
+  "seed": 42,
+  "epochs": 20
+}

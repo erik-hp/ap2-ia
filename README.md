@@ -62,6 +62,8 @@ Os notebooks salvam resultados suficientes para auditar curvas, escolha de model
 | 4 | `outputs/xai/gradcam_correct_high.png`, `gradcam_wrong_high.png`, `feature_maps_first_conv.png`, `integrated_gradients_example.png` |
 | 5 | `checkpoints/final/best_final_model.pt`, `experiments/final/final_training_history.csv`, `test_metrics.json`, `test_classification_report.csv`, `test_confusion_matrix.csv` |
 
+Os resultados ja executados das etapas 1 e 2 estao resumidos em `docs/RESULTADOS_ETAPAS_01_02.md`.
+
 Checkpoints `.pt` nao devem ser versionados se ficarem grandes. Para a entrega final, envie o arquivo junto com o trabalho ou informe um link de download no relatorio.
 
 ## Hardware utilizado

@@ -1,0 +1,18 @@
+{
+  "image_shape": [
+    16,
+    3,
+    224,
+    224
+  ],
+  "label_shape": [
+    16,
+    1
+  ],
+  "batch_size": 16,
+  "image_size": 224,
+  "uses_torchvision_transforms": true,
+  "normalized_with_imagenet_stats": true,
+  "source_size": 28,
+  "memory_safe_resize_to_224": true
+}
