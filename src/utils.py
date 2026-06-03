@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 import csv
+import json
+import os
+import platform
 import random
 import time
 from pathlib import Path
@@ -24,6 +27,10 @@ RESULT_COLUMNS = [
     "tempo_s",
     "vram_mb",
 ]
+
+
+def project_root() -> Path:
+    return Path(__file__).resolve().parents[1]
 
 
 def set_seed(seed: int = 42) -> None:
@@ -54,6 +61,35 @@ def append_result(path: str | Path, row: dict[str, object]) -> None:
         writer.writerow({column: row.get(column, "") for column in RESULT_COLUMNS})
 
 
+def save_json(path: str | Path, data: dict[str, object]) -> None:
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8") as file:
+        json.dump(data, file, indent=2, ensure_ascii=False)
+
+
+def collect_hardware_info() -> dict[str, object]:
+    info: dict[str, object] = {
+        "python": platform.python_version(),
+        "platform": platform.platform(),
+        "processor": platform.processor(),
+        "cpu_count": os.cpu_count(),
+        "torch": torch.__version__,
+        "cuda_available": torch.cuda.is_available(),
+    }
+    if torch.cuda.is_available():
+        device_index = torch.cuda.current_device()
+        props = torch.cuda.get_device_properties(device_index)
+        info.update(
+            {
+                "cuda_version": torch.version.cuda,
+                "gpu_name": props.name,
+                "vram_total_mb": round(props.total_memory / 1024**2, 2),
+            }
+        )
+    return info
+
+
 class Timer:
     def __enter__(self):
         self.start = time.perf_counter()
@@ -64,9 +100,16 @@ class Timer:
 
 
 class EarlyStopping:
-    def __init__(self, patience: int = 5, mode: str = "min"):
+    def __init__(self, patience: int = 5, mode: str = "min", min_delta: float = 0.0):
+        if patience <= 0:
+            raise ValueError("patience must be positive")
+        if mode not in {"min", "max"}:
+            raise ValueError("mode must be 'min' or 'max'")
+        if min_delta < 0:
+            raise ValueError("min_delta must be non-negative")
         self.patience = patience
         self.mode = mode
+        self.min_delta = min_delta
         self.best = None
         self.bad_epochs = 0
 
@@ -74,9 +117,9 @@ class EarlyStopping:
         # Retorna True quando o treinamento deve parar.
         improved = self.best is None
         if self.best is not None and self.mode == "min":
-            improved = value < self.best
+            improved = value < self.best - self.min_delta
         if self.best is not None and self.mode == "max":
-            improved = value > self.best
+            improved = value > self.best + self.min_delta
 
         if improved:
             self.best = value

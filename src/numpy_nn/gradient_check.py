@@ -7,7 +7,9 @@ import numpy as np
 from .model import NumpyMLP
 
 
-def gradient_check(model: NumpyMLP, x: np.ndarray, y: np.ndarray, eps: float = 1e-5) -> float:
+def gradient_check(model: NumpyMLP, x: np.ndarray, y: np.ndarray, eps: float = 1e-5, tolerance: float = 1e-5) -> float:
+    if eps <= 0:
+        raise ValueError("eps must be positive")
     loss, grads = model.loss_and_grads(x, y)
     del loss
     max_diff = 0.0
@@ -31,5 +33,5 @@ def gradient_check(model: NumpyMLP, x: np.ndarray, y: np.ndarray, eps: float = 1
             max_diff = max(max_diff, float(diff))
 
     # O limite 1e-5 e o criterio exigido no enunciado.
-    assert max_diff < 1e-5, f"Gradient check falhou: {max_diff}"
+    assert max_diff < tolerance, f"Gradient check falhou: {max_diff}"
     return max_diff

@@ -5,6 +5,7 @@ matplotlib
 seaborn
 scikit-learn
 grad-cam==1.5.2
+captum==0.7.0
 pandas
 tqdm
 jupyter

@@ -6,8 +6,17 @@ venv/
 env/
 .env
 data/
+!src/data/
+!src/data/*.py
 outputs/
+!outputs/
+!outputs/figures/
+!outputs/xai/
+!outputs/figures/.gitkeep
+!outputs/xai/.gitkeep
 checkpoints/
+!checkpoints/
+!checkpoints/.gitkeep
 *.pt
 *.pth
 *.ckpt

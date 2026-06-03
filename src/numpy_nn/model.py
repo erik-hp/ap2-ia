@@ -11,18 +11,27 @@ class NumpyMLP:
     def __init__(self, layer_sizes: list[int], seed: int = 42):
         if len(layer_sizes) < 2:
             raise ValueError("layer_sizes must contain input and output sizes")
+        if any(size <= 0 for size in layer_sizes):
+            raise ValueError("all layer sizes must be positive")
 
         rng = np.random.default_rng(seed)
-        self.layer_sizes = layer_sizes
+        self.layer_sizes = [int(size) for size in layer_sizes]
         self.params: dict[str, np.ndarray] = {}
 
         # Inicializacao He: boa escolha para camadas com ReLU, pois preserva
         # melhor a escala dos sinais durante a propagacao.
-        for i, (fan_in, fan_out) in enumerate(zip(layer_sizes[:-1], layer_sizes[1:]), start=1):
+        for i, (fan_in, fan_out) in enumerate(zip(self.layer_sizes[:-1], self.layer_sizes[1:]), start=1):
             self.params[f"W{i}"] = rng.normal(0.0, np.sqrt(2.0 / fan_in), size=(fan_in, fan_out))
             self.params[f"b{i}"] = np.zeros((1, fan_out))
 
     def _prepare_input(self, x: np.ndarray) -> np.ndarray:
+        x = np.asarray(x, dtype=np.float64)
+        if x.ndim == 0:
+            raise ValueError("input must have at least one dimension")
+        if x.ndim == 1:
+            x = x.reshape(1, -1)
+        if x.shape[0] == 0:
+            raise ValueError("input batch must not be empty")
         expected_features = self.layer_sizes[0]
         if x.ndim != 2:
             x = x.reshape(x.shape[0], -1)
