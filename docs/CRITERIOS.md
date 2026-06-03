@@ -6,7 +6,7 @@ Este arquivo liga cada exigencia da rubrica aos arquivos do projeto. Os resultad
 
 - Etapa 1 usa apenas NumPy para a MLP: `src/numpy_nn/` e `notebooks/01_numpy_mlp.ipynb`.
 - Etapas 2 a 5 usam PyTorch/torchvision: `src/train.py`, `src/data/dataset.py`, `src/models/`.
-- PathMNIST 28x28 e usado apenas na comparacao algoritmica da Etapa 1 e na validacao equivalente da MLP PyTorch. O pipeline 224x224 e verificado no notebook 02 e usado nas etapas 3 a 5.
+- PathMNIST 28x28 e usado na comparacao algoritmica da Etapa 1 e como fonte leve nas etapas seguintes. Nas etapas 2 a 5, o pipeline entrega tensores 224x224 via `torchvision.transforms.Resize`, evitando carregar o arquivo oficial 224x224 completo na RAM do Colab.
 - Treino em Colab/Kaggle e suportado pelos notebooks com instalacao de dependencias ausentes e deteccao da raiz do projeto.
 
 ## Reprodutibilidade

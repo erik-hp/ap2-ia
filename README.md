@@ -23,7 +23,7 @@ O projeto segue cinco etapas:
 - Seed global: `42`.
 - Dataset: PathMNIST oficial, sem remixar os splits `train`, `val` e `test`.
 - Etapa 1: usa PathMNIST 28x28 em grayscale, como permitido para a MLP NumPy.
-- Etapas 2 a 5: usam pipeline PyTorch/torchvision com PathMNIST 224x224.
+- Etapas 2 a 5: usam pipeline PyTorch/torchvision com saida 224x224. Para caber no Colab, o loader usa PathMNIST 28x28 como fonte e redimensiona em tempo de execucao para 224x224, evitando carregar o arquivo 224x224 completo na RAM.
 - O test set deve ser executado uma unica vez, apenas no modelo final escolhido pelo validation set.
 
 Instalacao local:
@@ -78,13 +78,13 @@ Preencher apos a execucao final. Os notebooks 03 e 05 tambem salvam `experiments
 Treino de um experimento:
 
 ```bash
-python src/train.py --model resnet50 --mode feature_extraction --optimizer adamw --lr 1e-3 --epochs 10 --batch-size 64 --image-size 224 --results experiments/results.csv --checkpoint checkpoints/stage03/resnet50_feature_extraction.pt
+python src/train.py --model resnet50 --mode feature_extraction --optimizer adamw --lr 1e-3 --epochs 10 --batch-size 32 --image-size 224 --source-size 28 --results experiments/results.csv --checkpoint checkpoints/stage03/resnet50_feature_extraction.pt
 ```
 
 Treino final com regularizacao e scheduler:
 
 ```bash
-python src/train.py --model resnet50 --mode fine_tuning --optimizer adamw --lr 1e-4 --epochs 30 --batch-size 32 --image-size 224 --augment-policy randaugment --label-smoothing 0.1 --cosine --early-stopping --patience 5 --checkpoint checkpoints/final/best_final_model.pt
+python src/train.py --model resnet50 --mode fine_tuning --optimizer adamw --lr 1e-4 --epochs 30 --batch-size 16 --image-size 224 --source-size 28 --augment-policy randaugment --label-smoothing 0.1 --cosine --early-stopping --patience 5 --checkpoint checkpoints/final/best_final_model.pt
 ```
 
 ## Aderencia aos criterios

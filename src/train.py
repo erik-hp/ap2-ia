@@ -65,6 +65,7 @@ def main():
     parser.add_argument("--epochs", type=int, default=10)
     parser.add_argument("--batch-size", type=int, default=64)
     parser.add_argument("--image-size", type=int, default=224)
+    parser.add_argument("--source-size", type=int, default=28, choices=[28, 64, 128, 224])
     parser.add_argument("--augment-policy", default="basic", choices=["none", "basic", "randaugment", "autoaugment"])
     parser.add_argument("--num-workers", type=int, default=None)
     parser.add_argument("--results", default="experiments/results.csv")
@@ -95,7 +96,13 @@ def main():
                 "hardware": collect_hardware_info(),
             },
         )
-    loaders = get_loaders(batch_size=args.batch_size, image_size=args.image_size, num_workers=args.num_workers, augment_policy=args.augment_policy)
+    loaders = get_loaders(
+        batch_size=args.batch_size,
+        image_size=args.image_size,
+        source_size=args.source_size,
+        num_workers=args.num_workers,
+        augment_policy=args.augment_policy,
+    )
     model = build_model(args.model, args.mode, pretrained=not args.no_pretrained).to(current_device)
     criterion = nn.CrossEntropyLoss(label_smoothing=args.label_smoothing)
 

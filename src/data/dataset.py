@@ -25,8 +25,7 @@ def build_transform(image_size: int = 224, train: bool = False, augment_policy: 
     if augment_policy not in {"none", "basic", "randaugment", "autoaugment"}:
         raise ValueError("augment_policy must be one of: none, basic, randaugment, autoaugment")
     steps: list[object] = []
-    if image_size != 224:
-        steps.append(transforms.Resize((image_size, image_size), antialias=True))
+    steps.append(transforms.Resize((image_size, image_size), antialias=True))
     if train:
         if augment_policy == "basic":
             steps.extend([transforms.RandomHorizontalFlip(), transforms.RandomRotation(10)])
@@ -46,19 +45,22 @@ def build_transform(image_size: int = 224, train: bool = False, augment_policy: 
 def get_dataset(
     split: Split,
     image_size: int = 224,
+    source_size: int = 28,
     train_transform: bool | None = None,
     download: bool = True,
     augment_policy: str = "basic",
 ) -> PathMNIST:
     if split not in {"train", "val", "test"}:
         raise ValueError("split must be one of: train, val, test")
+    if source_size not in {28, 64, 128, 224}:
+        raise ValueError("source_size must be one of: 28, 64, 128, 224")
     if train_transform is None:
         train_transform = split == "train"
     return PathMNIST(
         split=split,
         transform=build_transform(image_size=image_size, train=train_transform, augment_policy=augment_policy),
         download=download,
-        size=image_size,
+        size=source_size,
         as_rgb=True,
     )
 
@@ -72,20 +74,23 @@ def _default_workers() -> int:
 def get_loaders(
     batch_size: int = 64,
     image_size: int = 224,
+    source_size: int = 28,
     num_workers: int | None = None,
     download: bool = True,
     augment_policy: str = "basic",
 ) -> dict[str, DataLoader]:
     if batch_size <= 0:
         raise ValueError("batch_size must be positive")
+    if source_size not in {28, 64, 128, 224}:
+        raise ValueError("source_size must be one of: 28, 64, 128, 224")
     num_workers = _default_workers() if num_workers is None else num_workers
     if num_workers < 0:
         raise ValueError("num_workers must be non-negative")
     pin_memory = torch.cuda.is_available()
     datasets = {
-        "train": get_dataset("train", image_size=image_size, train_transform=True, download=download, augment_policy=augment_policy),
-        "val": get_dataset("val", image_size=image_size, train_transform=False, download=download, augment_policy="none"),
-        "test": get_dataset("test", image_size=image_size, train_transform=False, download=download, augment_policy="none"),
+        "train": get_dataset("train", image_size=image_size, source_size=source_size, train_transform=True, download=download, augment_policy=augment_policy),
+        "val": get_dataset("val", image_size=image_size, source_size=source_size, train_transform=False, download=download, augment_policy="none"),
+        "test": get_dataset("test", image_size=image_size, source_size=source_size, train_transform=False, download=download, augment_policy="none"),
     }
     return {
         split: DataLoader(
