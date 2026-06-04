@@ -30,10 +30,12 @@ RESULT_COLUMNS = [
 
 
 def project_root() -> Path:
+    """Retorna a raiz do repositorio a partir de ``src/utils.py``."""
     return Path(__file__).resolve().parents[1]
 
 
 def set_seed(seed: int = 42) -> None:
+    """Sincroniza seeds de Python, NumPy e PyTorch."""
     # Mantem NumPy, Python e PyTorch sincronizados na mesma seed global.
     random.seed(seed)
     np.random.seed(seed)
@@ -46,10 +48,12 @@ def set_seed(seed: int = 42) -> None:
 
 
 def device() -> torch.device:
+    """Seleciona CUDA quando disponivel, caso contrario CPU."""
     return torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 def append_result(path: str | Path, row: dict[str, object]) -> None:
+    """Adiciona uma linha padronizada ao CSV de experimentos."""
     # Cria o CSV com cabecalho na primeira escrita e apenas adiciona linhas depois.
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -62,6 +66,7 @@ def append_result(path: str | Path, row: dict[str, object]) -> None:
 
 
 def save_json(path: str | Path, data: dict[str, object]) -> None:
+    """Salva dicionario como JSON UTF-8 indentado."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8") as file:
@@ -69,6 +74,7 @@ def save_json(path: str | Path, data: dict[str, object]) -> None:
 
 
 def collect_hardware_info() -> dict[str, object]:
+    """Coleta informacoes reproduziveis do ambiente e acelerador."""
     info: dict[str, object] = {
         "python": platform.python_version(),
         "platform": platform.platform(),
@@ -91,6 +97,7 @@ def collect_hardware_info() -> dict[str, object]:
 
 
 class Timer:
+    """Context manager para medir tempo decorrido."""
     def __enter__(self):
         self.start = time.perf_counter()
         return self
@@ -100,6 +107,7 @@ class Timer:
 
 
 class EarlyStopping:
+    """Controla parada antecipada baseada em metrica de validacao."""
     def __init__(self, patience: int = 5, mode: str = "min", min_delta: float = 0.0):
         if patience <= 0:
             raise ValueError("patience must be positive")
@@ -114,6 +122,7 @@ class EarlyStopping:
         self.bad_epochs = 0
 
     def step(self, value: float) -> bool:
+        """Atualiza o estado e informa se o treinamento deve parar."""
         # Retorna True quando o treinamento deve parar.
         improved = self.best is None
         if self.best is not None and self.mode == "min":

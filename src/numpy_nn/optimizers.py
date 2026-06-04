@@ -6,6 +6,7 @@ import numpy as np
 
 
 class SGDMomentum:
+    """SGD com Momentum implementado sem frameworks de deep learning."""
     def __init__(self, params: dict[str, np.ndarray], lr: float = 1e-2, beta: float = 0.9):
         if lr <= 0:
             raise ValueError("lr must be positive")
@@ -16,6 +17,7 @@ class SGDMomentum:
         self.velocity = {name: np.zeros_like(value) for name, value in params.items()}
 
     def step(self, params: dict[str, np.ndarray], grads: dict[str, np.ndarray]) -> None:
+        """Atualiza os parametros in-place usando os gradientes informados."""
         for name, grad in grads.items():
             if name not in params:
                 raise KeyError(f"Unknown parameter in grads: {name}")

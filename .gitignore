@@ -1,13 +1,42 @@
+# Python
 __pycache__/
 *.py[cod]
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+build/
+dist/
+*.egg-info/
+
+# Notebooks e editores
 .ipynb_checkpoints/
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ambientes, configuracoes locais e segredos
 .venv/
 venv/
 env/
 .env
+.env.*
+!.env.example
+
+# Datasets e downloads locais
 data/
+*.npz
+*.npy
 !src/data/
 !src/data/*.py
+!tests/data/
+!tests/data/*.py
+
+# Artefatos regeneraveis
 outputs/
 !outputs/
 !outputs/figures/
@@ -20,3 +49,15 @@ checkpoints/
 *.pt
 *.pth
 *.ckpt
+wandb/
+runs/
+logs/
+*.log
+
+# Sistema operacional e temporarios
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.tmp
+*.temp
+~$*

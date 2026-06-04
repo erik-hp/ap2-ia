@@ -14,5 +14,8 @@
   "uses_torchvision_transforms": true,
   "normalized_with_imagenet_stats": true,
   "source_size": 28,
-  "memory_safe_resize_to_224": true
+  "memory_safe_resize_to_224": true,
+  "official_source_224_required": true,
+  "criterion_met": false,
+  "note": "Historical run. Reexecute the final cell of notebook 02 with source_size=224 and the memory-mapped loader."
 }

@@ -9,3 +9,5 @@ captum==0.7.0
 pandas
 tqdm
 jupyter
+pytest
+wandb

@@ -32,6 +32,7 @@ def _build_torchvision_model(factory, weights):
 
 
 def create_model(name: str, num_classes: int = 9, pretrained: bool = True, mode: str = "feature_extraction") -> nn.Module:
+    """Cria backbone torchvision com classificador adaptado ao PathMNIST."""
     if mode not in {"feature_extraction", "fine_tuning"}:
         raise ValueError("mode must be 'feature_extraction' or 'fine_tuning'")
     if num_classes <= 0:
@@ -77,6 +78,7 @@ def create_model(name: str, num_classes: int = 9, pretrained: bool = True, mode:
 
 
 def parameter_groups(model: nn.Module, lr_base: float, mode: str) -> list[dict[str, object]]:
+    """Separa backbone e classificador para learning rates diferentes."""
     if lr_base <= 0:
         raise ValueError("lr_base must be positive")
     if mode not in {"feature_extraction", "fine_tuning"}:

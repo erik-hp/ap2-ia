@@ -10,14 +10,24 @@ from torch import nn
 from torch.optim import AdamW, SGD
 from tqdm import tqdm
 
-from data.dataset import get_loaders
+from data.dataset import PATHMNIST_CLASSES, get_loaders
+from evaluate import predict_loader, save_classification_artifacts
 from models.custom_cnn import CustomCNN
 from models.transfer import MODEL_NAMES, create_model, parameter_groups
 from utils import EarlyStopping, Timer, append_result, collect_hardware_info, device, save_json, set_seed
 
 
 def run_epoch(model, loader, criterion, optimizer=None, current_device=None):
-    # Quando optimizer e None, a funcao roda em modo avaliacao.
+    """Executa uma epoca de treino ou avaliacao.
+
+    :param model: Modelo PyTorch.
+    :param loader: DataLoader da epoca.
+    :param criterion: Funcao de perda.
+    :param optimizer: Otimizador; ``None`` ativa avaliacao.
+    :param current_device: Dispositivo; quando ausente, e detectado.
+    :return: Tupla ``(loss_media, accuracy)``.
+    :raises ValueError: Se o loader nao produzir amostras.
+    """
     if current_device is None:
         current_device = device()
     training = optimizer is not None
@@ -50,33 +60,57 @@ def run_epoch(model, loader, criterion, optimizer=None, current_device=None):
 
 
 def build_model(name: str, mode: str, pretrained: bool = True):
-    # A CNN autoral nao usa modos de transfer learning.
+    """Cria a CNN autoral ou um backbone torchvision."""
     if name == "custom_cnn":
         return CustomCNN()
     return create_model(name, mode=mode, pretrained=pretrained)
 
 
+def _is_improved(value: float, best: float | None, mode: str) -> bool:
+    """Retorna se uma metrica melhorou segundo ``min`` ou ``max``."""
+    return best is None or (value < best if mode == "min" else value > best)
+
+
+def _wandb_init(args):
+    """Inicializa WandB somente quando explicitamente solicitado."""
+    if not args.use_wandb:
+        return None
+    try:
+        import wandb
+    except ImportError as exc:
+        raise RuntimeError("WandB is not installed. Run: pip install wandb") from exc
+    return wandb.init(project=args.wandb_project, entity=args.wandb_entity or None, name=args.run_name or None, config=vars(args))
+
+
 def main():
+    """Executa treino, logging CSV/JSON, checkpoint e rastreamento opcional."""
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", default="custom_cnn", choices=["custom_cnn", *MODEL_NAMES])
     parser.add_argument("--mode", default="feature_extraction", choices=["feature_extraction", "fine_tuning"])
     parser.add_argument("--optimizer", default="adamw", choices=["sgd", "adamw"])
     parser.add_argument("--lr", type=float, default=1e-3)
     parser.add_argument("--epochs", type=int, default=10)
-    parser.add_argument("--batch-size", type=int, default=64)
+    parser.add_argument("--batch-size", type=int, default=32)
     parser.add_argument("--image-size", type=int, default=224)
-    parser.add_argument("--source-size", type=int, default=28, choices=[28, 64, 128, 224])
+    parser.add_argument("--source-size", type=int, default=224, choices=[28, 64, 128, 224])
     parser.add_argument("--augment-policy", default="basic", choices=["none", "basic", "randaugment", "autoaugment"])
     parser.add_argument("--num-workers", type=int, default=None)
     parser.add_argument("--results", default="experiments/results.csv")
     parser.add_argument("--checkpoint", default="")
+    parser.add_argument("--checkpoint-metric", default="val_loss", choices=["val_loss", "val_acc"])
+    parser.add_argument("--checkpoint-mode", default="auto", choices=["auto", "min", "max"])
     parser.add_argument("--run-metadata", default="")
+    parser.add_argument("--evaluation-dir", default="")
     parser.add_argument("--label-smoothing", type=float, default=0.0)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--no-pretrained", action="store_true")
     parser.add_argument("--cosine", action="store_true")
     parser.add_argument("--early-stopping", action="store_true")
     parser.add_argument("--patience", type=int, default=5)
+    parser.add_argument("--use-wandb", action="store_true")
+    parser.add_argument("--wandb-project", default="ap2-ia-pathmnist")
+    parser.add_argument("--wandb-entity", default="")
+    parser.add_argument("--run-name", default="")
     args = parser.parse_args()
 
     if args.epochs <= 0:
@@ -85,9 +119,12 @@ def main():
         raise ValueError("--lr must be positive")
     if not 0.0 <= args.label_smoothing < 1.0:
         raise ValueError("--label-smoothing must be in [0, 1)")
+    if args.source_size != 224:
+        raise ValueError("Official project rules require --source-size 224 for PyTorch stages.")
 
     set_seed(args.seed)
     current_device = device()
+    wandb_run = _wandb_init(args)
     if args.run_metadata:
         save_json(
             args.run_metadata,
@@ -112,7 +149,10 @@ def main():
     # Opcoes exigidas para a Etapa 5: cosine annealing, label smoothing e early stopping.
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs) if args.cosine else None
     stopper = EarlyStopping(patience=args.patience, mode="min") if args.early_stopping else None
-    best_val_loss = float("inf")
+    checkpoint_mode = args.checkpoint_mode
+    if checkpoint_mode == "auto":
+        checkpoint_mode = "min" if args.checkpoint_metric == "val_loss" else "max"
+    best_checkpoint_value: float | None = None
 
     for epoch in range(1, args.epochs + 1):
         if torch.cuda.is_available():
@@ -124,7 +164,7 @@ def main():
                 scheduler.step()
 
         vram_mb = torch.cuda.max_memory_allocated() / 1024**2 if torch.cuda.is_available() else 0.0
-        append_result(args.results, {
+        epoch_metrics = {
             "modelo": args.model,
             "modo": args.mode,
             "otimizador": args.optimizer,
@@ -136,9 +176,14 @@ def main():
             "acc_val": val_acc,
             "tempo_s": timer.elapsed,
             "vram_mb": vram_mb,
-        })
-        if args.checkpoint and val_loss < best_val_loss:
-            best_val_loss = val_loss
+        }
+        append_result(args.results, epoch_metrics)
+        if wandb_run is not None:
+            wandb_run.log({**epoch_metrics, "epoch": epoch})
+
+        checkpoint_value = val_loss if args.checkpoint_metric == "val_loss" else val_acc
+        if args.checkpoint and _is_improved(checkpoint_value, best_checkpoint_value, checkpoint_mode):
+            best_checkpoint_value = checkpoint_value
             checkpoint_path = Path(args.checkpoint)
             checkpoint_path.parent.mkdir(parents=True, exist_ok=True)
             torch.save(
@@ -150,11 +195,35 @@ def main():
                     "epoch": epoch,
                     "val_loss": val_loss,
                     "val_acc": val_acc,
+                    "checkpoint_metric": args.checkpoint_metric,
+                    "checkpoint_mode": checkpoint_mode,
                 },
                 checkpoint_path,
             )
+            if wandb_run is not None:
+                import wandb
+
+                artifact = wandb.Artifact(f"{wandb_run.id}-best-model", type="model")
+                artifact.add_file(str(checkpoint_path))
+                wandb_run.log_artifact(artifact)
         if stopper is not None and stopper.step(val_loss):
             break
+
+    if args.evaluation_dir:
+        if args.checkpoint and Path(args.checkpoint).exists():
+            checkpoint = torch.load(args.checkpoint, map_location=current_device)
+            model.load_state_dict(checkpoint["model_state_dict"])
+        y_true, y_pred = predict_loader(model, loaders["val"], current_device)
+        save_classification_artifacts(y_true, y_pred, PATHMNIST_CLASSES, args.evaluation_dir, prefix="val")
+        if wandb_run is not None:
+            import wandb
+
+            artifact = wandb.Artifact(f"{wandb_run.id}-validation-report", type="evaluation")
+            for path in Path(args.evaluation_dir).glob("val_*"):
+                artifact.add_file(str(path))
+            wandb_run.log_artifact(artifact)
+    if wandb_run is not None:
+        wandb_run.finish()
 
 
 if __name__ == "__main__":

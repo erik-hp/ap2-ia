@@ -8,6 +8,7 @@ from .model import NumpyMLP
 
 
 def gradient_check(model: NumpyMLP, x: np.ndarray, y: np.ndarray, eps: float = 1e-5, tolerance: float = 1e-5) -> float:
+    """Compara gradientes analiticos e numericos por diferencas centrais."""
     if eps <= 0:
         raise ValueError("eps must be positive")
     loss, grads = model.loss_and_grads(x, y)

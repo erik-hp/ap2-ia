@@ -15,6 +15,7 @@ from utils import save_json
 
 @torch.no_grad()
 def predict_loader(model: torch.nn.Module, loader, current_device: torch.device) -> tuple[list[int], list[int]]:
+    """Coleta classes reais e preditas de um DataLoader sem gradientes."""
     model.eval()
     y_true: list[int] = []
     y_pred: list[int] = []
@@ -36,6 +37,7 @@ def save_classification_artifacts(
     output_dir: str | Path,
     prefix: str = "test",
 ) -> dict[str, float]:
+    """Salva metricas, classification report e matriz de confusao."""
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 

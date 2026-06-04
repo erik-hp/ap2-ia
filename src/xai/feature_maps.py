@@ -7,6 +7,7 @@ import torch
 
 
 def capture_first_conv_feature_maps(model: torch.nn.Module, images: torch.Tensor) -> torch.Tensor:
+    """Captura a saida da primeira convolucao usando forward hook temporario."""
     # Hook captura a saida da primeira camada convolucional sem alterar o modelo.
     first_conv = next((module for module in model.modules() if isinstance(module, torch.nn.Conv2d)), None)
     if first_conv is None:
@@ -29,6 +30,7 @@ def capture_first_conv_feature_maps(model: torch.nn.Module, images: torch.Tensor
 
 
 def plot_16_feature_maps(feature_maps: torch.Tensor, image_index: int = 0, max_maps: int = 16):
+    """Plota ate 16 mapas de ativacao em uma grade 4x4."""
     # O enunciado pede grid de 16 filtros e titulo com o indice de cada filtro.
     if feature_maps.ndim != 4:
         raise ValueError("feature_maps must have shape [batch, channels, height, width]")

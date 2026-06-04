@@ -7,6 +7,11 @@ from torch import nn
 
 
 class CustomCNN(nn.Module):
+    """CNN autoral com tres blocos convolucionais, pooling e dropout.
+
+    :param num_classes: Quantidade de classes da camada final.
+    :param dropout: Probabilidade de dropout antes do classificador.
+    """
     def __init__(self, num_classes: int = 9, dropout: float = 0.3):
         super().__init__()
         if num_classes <= 0:
@@ -43,6 +48,7 @@ class CustomCNN(nn.Module):
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Retorna logits para um batch de imagens RGB."""
         return self.classifier(self.features(x))
 
     def _init_weights(self) -> None:

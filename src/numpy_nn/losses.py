@@ -6,6 +6,7 @@ import numpy as np
 
 
 def softmax(logits: np.ndarray) -> np.ndarray:
+    """Calcula softmax numericamente estavel para logits 2D."""
     if logits.ndim != 2:
         raise ValueError("logits must have shape [batch, classes]")
     # Subtrair o maior logit evita overflow em exp(logits).
@@ -16,7 +17,13 @@ def softmax(logits: np.ndarray) -> np.ndarray:
 
 
 def cross_entropy_loss(logits: np.ndarray, y: np.ndarray) -> tuple[float, np.ndarray]:
-    """Retorna CrossEntropy estavel e o gradiente em relacao aos logits."""
+    """Retorna CrossEntropy estavel e o gradiente em relacao aos logits.
+
+    :param logits: Matriz ``[batch, classes]``.
+    :param y: Indices inteiros das classes.
+    :return: Tupla ``(loss_media, gradiente_dos_logits)``.
+    :raises ValueError: Se shapes ou indices forem invalidos.
+    """
     y = y.reshape(-1).astype(int)
     if logits.ndim != 2:
         raise ValueError("logits must have shape [batch, classes]")

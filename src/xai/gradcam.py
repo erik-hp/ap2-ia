@@ -10,6 +10,7 @@ from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
 
 
 def last_conv_layer(model: torch.nn.Module) -> torch.nn.Module:
+    """Retorna a ultima camada convolucional adequada ao Grad-CAM."""
     # Grad-CAM costuma ser aplicado na ultima camada convolucional antes do GAP.
     convs = [module for module in model.modules() if isinstance(module, torch.nn.Conv2d)]
     if not convs:
@@ -18,6 +19,7 @@ def last_conv_layer(model: torch.nn.Module) -> torch.nn.Module:
 
 
 def gradcam_overlay(model, image_tensor: torch.Tensor, rgb_image: np.ndarray, target_class: int | None = None):
+    """Gera overlay Grad-CAM RGB para uma imagem e classe alvo opcional."""
     # target_class=None faz a biblioteca usar a classe predita pelo modelo.
     model.eval()
     if image_tensor.ndim == 3:

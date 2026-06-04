@@ -49,4 +49,4 @@ O pipeline PyTorch tambem foi verificado para entregar tensores no formato exigi
 [16, 3, 224, 224]
 ```
 
-Para evitar estouro de RAM no Colab, o loader usa PathMNIST 28x28 como fonte leve e aplica `torchvision.transforms.Resize((224, 224))` em tempo de execucao. Assim, os modelos recebem entrada 224x224 sem carregar o arquivo oficial 224x224 completo na memoria.
+O primeiro teste do pipeline usou 28x28 como fonte e, portanto, nao comprova a regra oficial da Etapa 2. O notebook foi corrigido para usar o PathMNIST+ oficial 224x224 com memoria mapeada em disco. A celula final do notebook 02 deve ser reexecutada para atualizar esta evidencia sem estourar a RAM do Colab.
