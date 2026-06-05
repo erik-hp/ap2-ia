@@ -15,6 +15,7 @@ import torch
 
 
 RESULT_COLUMNS = [
+    "tag",
     "modelo",
     "modo",
     "otimizador",
@@ -27,6 +28,52 @@ RESULT_COLUMNS = [
     "tempo_s",
     "vram_mb",
 ]
+
+
+def _lr_tag(value: object) -> str:
+    """Formata learning rate no mesmo padrao dos manifests."""
+    try:
+        lr = float(value)
+    except (TypeError, ValueError):
+        return str(value).replace(".", "p")
+    if abs(lr - 1e-2) < 1e-12:
+        return "1e2"
+    if abs(lr - 1e-3) < 1e-12:
+        return "1e3"
+    if abs(lr - 1e-4) < 1e-12:
+        return "1e4"
+    return f"{lr:g}".replace(".", "p").replace("-", "")
+
+
+def _infer_result_tag(row: dict[str, object]) -> str:
+    """Infere tag para CSVs antigos que nao tinham essa coluna."""
+    if row.get("tag"):
+        return str(row["tag"])
+    model = str(row.get("modelo", "model"))
+    mode = str(row.get("modo", "feature_extraction"))
+    optimizer = str(row.get("otimizador", "opt"))
+    lr = _lr_tag(row.get("lr", "lr"))
+    if model == "custom_cnn":
+        return f"{model}_{optimizer}_{lr}"
+    return f"{model}_{mode}_{optimizer}_{lr}"
+
+
+def _migrate_result_csv(path: Path) -> bool:
+    """Atualiza CSV antigo para o cabecalho atual sem perder linhas."""
+    if not path.exists() or path.stat().st_size == 0:
+        return False
+    with path.open("r", newline="", encoding="utf-8") as file:
+        reader = csv.DictReader(file)
+        if reader.fieldnames == RESULT_COLUMNS:
+            return True
+        rows = list(reader)
+    with path.open("w", newline="", encoding="utf-8") as file:
+        writer = csv.DictWriter(file, fieldnames=RESULT_COLUMNS)
+        writer.writeheader()
+        for row in rows:
+            row["tag"] = _infer_result_tag(row)
+            writer.writerow({column: row.get(column, "") for column in RESULT_COLUMNS})
+    return True
 
 
 def project_root() -> Path:
@@ -57,7 +104,7 @@ def append_result(path: str | Path, row: dict[str, object]) -> None:
     # Cria o CSV com cabecalho na primeira escrita e apenas adiciona linhas depois.
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    exists = path.exists()
+    exists = _migrate_result_csv(path)
     with path.open("a", newline="", encoding="utf-8") as file:
         writer = csv.DictWriter(file, fieldnames=RESULT_COLUMNS)
         if not exists:

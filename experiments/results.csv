@@ -1,1 +1,1 @@
-modelo,modo,otimizador,lr,epoca,loss_train,loss_val,acc_train,acc_val,tempo_s,vram_mb
+tag,modelo,modo,otimizador,lr,epoca,loss_train,loss_val,acc_train,acc_val,tempo_s,vram_mb
