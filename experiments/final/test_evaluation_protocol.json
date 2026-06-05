@@ -1,0 +1,8 @@
+{
+  "test_used_once": true,
+  "source": "recovered_from_notebook_output",
+  "checkpoint_path_expected": "checkpoints/final/best_final_model.pt",
+  "best_epoch_by_val_loss": 3,
+  "best_val_loss": 0.523702,
+  "best_val_acc": 0.992603
+}

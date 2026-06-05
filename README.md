@@ -64,6 +64,7 @@ Os notebooks salvam resultados suficientes para auditar curvas, escolha de model
 
 Os resultados ja executados das etapas 1 e 2 estao resumidos em `docs/RESULTADOS_ETAPAS_01_02.md`.
 Os resultados da etapa 3 estao resumidos em `docs/RESULTADOS_ETAPA_03.md`.
+Os resultados da etapa 5 estao resumidos em `docs/RESULTADOS_ETAPA_05.md`.
 
 Checkpoints `.pt` nao devem ser versionados se ficarem grandes. Para a entrega final, envie o arquivo junto com o trabalho ou informe um link de download no relatorio.
 

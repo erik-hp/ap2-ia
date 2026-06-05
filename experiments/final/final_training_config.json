@@ -1,0 +1,13 @@
+{
+  "model": "resnet50",
+  "mode": "fine_tuning",
+  "optimizer": "sgd",
+  "lr": 0.01,
+  "epochs": 5,
+  "batch_size": 16,
+  "image_size": 224,
+  "label_smoothing": 0.1,
+  "patience": 5,
+  "augment_policy": "randaugment",
+  "seed": 42
+}
