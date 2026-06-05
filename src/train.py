@@ -99,6 +99,7 @@ def main():
     parser.add_argument("--checkpoint", default="")
     parser.add_argument("--checkpoint-metric", default="val_loss", choices=["val_loss", "val_acc"])
     parser.add_argument("--checkpoint-mode", default="auto", choices=["auto", "min", "max"])
+    parser.add_argument("--tag", default="")
     parser.add_argument("--run-metadata", default="")
     parser.add_argument("--evaluation-dir", default="")
     parser.add_argument("--label-smoothing", type=float, default=0.0)
@@ -165,6 +166,7 @@ def main():
 
         vram_mb = torch.cuda.max_memory_allocated() / 1024**2 if torch.cuda.is_available() else 0.0
         epoch_metrics = {
+            "tag": args.tag or f"{args.model}_{args.mode}_{args.optimizer}_{args.lr}",
             "modelo": args.model,
             "modo": args.mode,
             "otimizador": args.optimizer,
