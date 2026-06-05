@@ -35,15 +35,14 @@ O notebook avaliou o conjunto de teste uma unica vez e registrou:
 - `experiments/final/final_training_history.csv`
 - `experiments/final/test_metrics.json`
 - `experiments/final/test_evaluation_protocol.json`
-- `outputs/figures/stage05_final_training_curves.png`
-- `outputs/figures/stage05_test_confusion_matrix.png`
-
-## Pendencias
-
-Os seguintes arquivos foram gerados pelo notebook, mas nao vieram no commit do Kaggle e precisam ser baixados/salvos para a entrega ficar completa:
-
 - `experiments/final/test_classification_report.csv`
 - `experiments/final/test_confusion_matrix.csv`
-- `checkpoints/final/best_final_model.pt` ou link externo para o checkpoint.
+- `outputs/figures/stage05_final_training_curves.png`
+- `outputs/figures/stage05_test_confusion_matrix.png`
+- `checkpoints/final/best_final_model.pt` localmente.
 
-O checkpoint nao precisa necessariamente entrar no GitHub; pode ser disponibilizado por link de download e citado no README/relatorio.
+## Checkpoint
+
+O checkpoint final foi recuperado para `checkpoints/final/best_final_model.pt`.
+Arquivos `.pt` continuam ignorados pelo Git por tamanho; para a entrega, envie o
+arquivo junto ao material final ou informe um link de download no README/relatorio.
