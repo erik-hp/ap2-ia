@@ -16,7 +16,7 @@ Auditoria baseada no PDF integral da atividade e no texto complementar fornecido
 | Feature extraction e fine-tuning | `create_model()` e notebook 03 |
 | Grid dois otimizadores x tres LRs | notebook 03 |
 | Scheduler, regularizacoes e augmentacao avancada | `src/train.py`, `src/data/dataset.py`, notebook 05 |
-| Feature Maps, Grad-CAM e Integrated Gradients | `src/xai/`, notebook 04 |
+| Feature Maps e Grad-CAM | `src/xai/`, notebook 04 |
 | Teste final bloqueado contra reexecucao acidental | notebook 05 |
 | Logs CSV/JSON, hardware e checkpoints | `src/utils.py`, `src/train.py`, notebooks |
 | Checkpoint configuravel por metrica/modo | argumentos `--checkpoint-metric` e `--checkpoint-mode` |
@@ -24,17 +24,15 @@ Auditoria baseada no PDF integral da atividade e no texto complementar fornecido
 | Testes unitarios e CI | `tests/`, `pytest.ini`, `.github/workflows/tests.yml` |
 | Declaracao de IA | `README.md` |
 
-## Evidencias que precisam ser reexecutadas
+## Evidencias ainda pendentes
 
-- A celula final do notebook 02 deve ser reexecutada com o novo loader oficial 224x224. O JSON historico esta marcado como nao conforme.
-- O notebook 03 deve ser executado para preencher `experiments/results.csv`, checkpoints, tempo e VRAM.
-- O notebook 05 deve ser executado apos a escolha estrita pelo validation set e avaliar o teste uma unica vez.
-- O notebook 04 deve ser executado depois do checkpoint final para gerar as imagens XAI.
+- A celula final do notebook 02 deve ser reexecutada com o loader oficial 224x224. O codigo do notebook ja usa `source_size=224`, mas o JSON versionado ainda e historico e esta marcado como `criterion_met: false`.
+- Documentar o hardware real usado nas execucoes finais. `experiments/results.csv` e `experiments/final/final_training_history.csv` registram tempo e VRAM, mas `experiments/hardware.json` nao esta presente.
+- Disponibilizar o checkpoint final ou link de download no relatorio/entrega, pois arquivos `.pt` nao sao versionados no Git.
 
 ## Itens obrigatoriamente manuais
 
 - Preencher nomes dos integrantes.
-- Documentar hardware real de cada execucao.
 - Escrever discussao histologica e conclusoes cientificas pela equipe.
 - Produzir artigo SBC/IEEE com no maximo 12 paginas sem referencias.
 - Incluir pelo menos oito referencias, sendo tres artigos originais e MedMNIST v2 obrigatorio.

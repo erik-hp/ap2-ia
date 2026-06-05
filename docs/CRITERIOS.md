@@ -14,7 +14,7 @@ Este arquivo liga cada exigencia da rubrica aos arquivos do projeto. Os resultad
 - Seeds: `utils.set_seed(42)` sincroniza `random`, `numpy` e `torch`.
 - Dependencias: `requirements.txt` e `requirements-colab.txt`.
 - Testes: `tests/`, `pytest.ini` e `.github/workflows/tests.yml`.
-- Hardware: gerado em `experiments/hardware.json` pelos notebooks 03 e 05.
+- Hardware: deve ser documentado no relatorio. Os logs salvos registram tempo e VRAM, mas `experiments/hardware.json` nao esta versionado.
 - Logs de treino: `experiments/results.csv`, `experiments/stage01_numpy/*.csv`, `experiments/final/*.csv`.
 - Checkpoints: `checkpoints/stage03/*.pt` e `checkpoints/final/best_final_model.pt`.
 - Figuras: `outputs/figures/*.png` e `outputs/xai/*.png`.
@@ -23,7 +23,7 @@ Este arquivo liga cada exigencia da rubrica aos arquivos do projeto. Os resultad
 ## Etapas
 
 1. MLP NumPy: `notebooks/01_numpy_mlp.ipynb`, `src/numpy_nn/`, `experiments/stage01_numpy/gradient_check.json`. Resultado registrado: gradient check `5.842521e-09`, abaixo de `1e-5`.
-2. Validacao PyTorch: `notebooks/02_pytorch_validation.ipynb`, `experiments/stage02_pytorch_validation/numpy_vs_pytorch_comparison.json`, `pathmnist_224_pipeline_check.json`. Resultado registrado: diferenca NumPy vs PyTorch de `1.019593` p.p., abaixo do limite de 2 p.p. A checagem do pipeline deve ser reexecutada apos a migracao para o loader oficial 224x224 mapeado em disco.
+2. Validacao PyTorch: `notebooks/02_pytorch_validation.ipynb`, `experiments/stage02_pytorch_validation/numpy_vs_pytorch_comparison.json`, `pathmnist_224_pipeline_check.json`. Resultado registrado: diferenca NumPy vs PyTorch de `1.019593` p.p., abaixo do limite de 2 p.p. A checagem do pipeline deve ser reexecutada para substituir o JSON historico marcado como `criterion_met: false`.
 3. CNNs, ViT e grid: `notebooks/03_cnns_and_vit.ipynb`, `src/models/`, `experiments/stage03_experiment_manifest.json`, `experiments/stage03_best_by_run.csv`.
 4. XAI: `notebooks/04_xai.ipynb`, `src/xai/`, `outputs/xai/`.
 5. Modelo final: `notebooks/05_final_model.ipynb`, `experiments/final/test_metrics.json`, `test_classification_report.csv`, `test_confusion_matrix.csv`.

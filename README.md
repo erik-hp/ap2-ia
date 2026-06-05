@@ -15,7 +15,7 @@ O projeto segue cinco etapas:
 1. MLP do zero com NumPy.
 2. Validacao equivalente em PyTorch e checagem do pipeline 224x224.
 3. CNN propria, CNNs pre-treinadas, ViT e grid de hiperparametros.
-4. Explicabilidade com Feature Maps, Grad-CAM e Integrated Gradients.
+4. Explicabilidade com Feature Maps e Grad-CAM.
 5. Treino final, avaliacao unica no teste e exportacao de metricas.
 
 ## Reprodutibilidade
@@ -59,7 +59,7 @@ Os notebooks salvam resultados suficientes para auditar curvas, escolha de model
 | 1 | `experiments/stage01_numpy/numpy_mlp_history.csv`, `gradient_check.json`, `outputs/figures/stage01_numpy_curves.png` |
 | 2 | `experiments/stage02_pytorch_validation/torch_mlp_history.csv`, `numpy_vs_pytorch_comparison.json`, `pathmnist_224_pipeline_check.json` |
 | 3 | `experiments/results.csv`, `stage03_experiment_manifest.json`, `stage03_best_by_run.csv`, `outputs/figures/stage03_validation_curves.png` |
-| 4 | `outputs/xai/gradcam_correct_high.png`, `gradcam_wrong_high.png`, `feature_maps_first_conv.png`, `integrated_gradients_example.png` |
+| 4 | `outputs/xai/gradcam_correct_high.png`, `gradcam_wrong_high.png`, `gradcam_attention_discussion.png`, `feature_maps_first_conv.png`, `xai_selection_summary.json` |
 | 5 | `checkpoints/final/best_final_model.pt`, `experiments/final/final_training_history.csv`, `test_metrics.json`, `test_classification_report.csv`, `test_confusion_matrix.csv` |
 
 Os resultados ja executados das etapas 1 e 2 estao resumidos em `docs/RESULTADOS_ETAPAS_01_02.md`.
@@ -71,7 +71,7 @@ Checkpoints `.pt` nao devem ser versionados se ficarem grandes. Para a entrega f
 
 ## Hardware utilizado
 
-Preencher apos a execucao final. Os notebooks 03 e 05 tambem salvam `experiments/hardware.json`.
+Preencher antes da entrega final, com base no ambiente usado nas execucoes. Os logs da Etapa 3 e da Etapa 5 registram tempo e VRAM por experimento, mas o arquivo global `experiments/hardware.json` nao esta versionado.
 
 - CPU:
 - GPU:
