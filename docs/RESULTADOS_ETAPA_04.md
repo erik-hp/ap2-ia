@@ -1,22 +1,37 @@
 # Resultados da Etapa 4
 
-## Status atual
+## Status
 
-Foram recebidos e organizados os seguintes artefatos:
+A Etapa 4 agora possui os artefatos principais de explicabilidade gerados a partir do checkpoint final local (`checkpoints/final/best_final_model.pt`):
 
 - `outputs/xai/feature_maps_first_conv.png`
+- `outputs/xai/gradcam_correct_high.png`
+- `outputs/xai/gradcam_wrong_high.png`
 - `outputs/xai/gradcam_attention_discussion.png`
+- `outputs/xai/xai_selection_summary.json`
 
-Esses arquivos sao visualmente validos como Feature Maps e exemplo de discussao de atencao. Entretanto, a execucao recebida do Colab rodou sem encontrar o checkpoint final, entao ainda nao comprova a explicabilidade do modelo final.
+## Evidencias geradas
 
-## Pendencias para cumprir a rubrica
+O arquivo `outputs/xai/xai_selection_summary.json` registra:
 
-- Rodar o notebook 04 com `checkpoints/final/best_final_model.pt` disponivel no Colab/Drive.
-- Gerar `outputs/xai/gradcam_correct_high.png` com 5 acertos mais confiantes.
-- Gerar `outputs/xai/gradcam_wrong_high.png` com 5 erros mais confiantes.
-- Gerar `outputs/xai/xai_selection_summary.json`.
-- Escrever a discussao histologica no relatorio, comparando regioes relevantes, fundo e artefatos.
+- 5 predicoes corretas selecionadas para Grad-CAM.
+- 5 predicoes erradas selecionadas para Grad-CAM.
+- 1 exemplo separado para discutir atencao em regiao possivelmente inadequada.
+- Confiancas dos acertos: 0.9962, 0.9949, 0.9931, 0.9901 e 0.9883.
+- Confiancas dos erros: 0.8556, 0.7284, 0.6407, 0.5591 e 0.3638.
 
-## Ajuste aplicado
+Os mapas de ativacao da primeira camada convolucional foram salvos em grade com 16 filtros, permitindo discutir se os filtros iniciais capturam bordas, textura, padroes nucleares e variacoes de intensidade.
 
-O notebook 04 agora exige o checkpoint final e seleciona os exemplos por ranking de confianca, evitando que limiares fixos retornem zero acertos ou erros.
+## Avaliacao contra a rubrica
+
+- Feature Maps: atendido pelo arquivo `feature_maps_first_conv.png`.
+- Grad-CAM em 5 acertos de alta confianca: atendido pelo arquivo `gradcam_correct_high.png`.
+- Grad-CAM em 5 erros: atendido pelo arquivo `gradcam_wrong_high.png`. Observacao: os erros foram selecionados por ranking de confianca; os primeiros sao bem confiantes, mas o quinto erro tem confianca moderada/baixa.
+- Caso de atencao inadequada para discussao: atendido pelo arquivo `gradcam_attention_discussion.png`.
+- Discussao clinica/histologica: precisa ser escrita no relatorio final, usando os artefatos acima como evidencia.
+
+## Pontos de atencao
+
+O arquivo `gradcam_attention_discussion.png` contem o exemplo solicitado, mas o texto do titulo ficou visualmente apertado. Para o relatorio, recomenda-se usar a imagem como apoio e escrever a interpretacao no texto, em vez de depender apenas do titulo da figura.
+
+Tecnica extra de bonus, como SHAP, Integrated Gradients ou Attention Rollout, nao foi incluida. Isso nao impede o cumprimento da Etapa 4 basica, mas nao deve ser declarado como realizado.
