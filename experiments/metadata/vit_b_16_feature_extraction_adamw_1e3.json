@@ -1,0 +1,22 @@
+{
+  "source": "recovered_from_kaggle_notebook_output",
+  "stage": 3,
+  "epochs": 1,
+  "batch_size": 16,
+  "image_size": 224,
+  "source_size": 224,
+  "result": {
+    "tag": "vit_b_16_feature_extraction_adamw_1e3",
+    "modelo": "vit_b_16",
+    "modo": "feature_extraction",
+    "otimizador": "adamw",
+    "lr": 0.001,
+    "epoca": 1,
+    "loss_train": 0.139539,
+    "loss_val": 0.091755,
+    "acc_train": 0.958709,
+    "acc_val": 0.972011,
+    "tempo_s": 3427.125204,
+    "vram_mb": 473.889648
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "source": "recovered_from_kaggle_notebook_output",
+  "stage": 3,
+  "epochs": 1,
+  "batch_size": 16,
+  "image_size": 224,
+  "source_size": 224,
+  "result": {
+    "tag": "resnet50_fine_tuning_sgd_1e3",
+    "modelo": "resnet50",
+    "modo": "fine_tuning",
+    "otimizador": "sgd",
+    "lr": 0.001,
+    "epoca": 1,
+    "loss_train": 0.301618,
+    "loss_val": 0.086214,
+    "acc_train": 0.913274,
+    "acc_val": 0.97431,
+    "tempo_s": 1152.992543,
+    "vram_mb": 1653.359375
+  }
+}

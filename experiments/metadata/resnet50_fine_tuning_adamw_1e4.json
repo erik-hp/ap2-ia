@@ -1,0 +1,22 @@
+{
+  "source": "recovered_from_kaggle_notebook_output",
+  "stage": 3,
+  "epochs": 1,
+  "batch_size": 16,
+  "image_size": 224,
+  "source_size": 224,
+  "result": {
+    "tag": "resnet50_fine_tuning_adamw_1e4",
+    "modelo": "resnet50",
+    "modo": "fine_tuning",
+    "otimizador": "adamw",
+    "lr": 0.0001,
+    "epoca": 1,
+    "loss_train": 0.229611,
+    "loss_val": 0.041144,
+    "acc_train": 0.932541,
+    "acc_val": 0.988904,
+    "tempo_s": 1171.380135,
+    "vram_mb": 1747.516113
+  }
+}

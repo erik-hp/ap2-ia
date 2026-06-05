@@ -1,0 +1,22 @@
+{
+  "source": "recovered_from_kaggle_notebook_output",
+  "stage": 3,
+  "epochs": 1,
+  "batch_size": 16,
+  "image_size": 224,
+  "source_size": 224,
+  "result": {
+    "tag": "resnet50_feature_extraction_adamw_1e3",
+    "modelo": "resnet50",
+    "modo": "feature_extraction",
+    "otimizador": "adamw",
+    "lr": 0.001,
+    "epoca": 1,
+    "loss_train": 0.266741,
+    "loss_val": 0.119548,
+    "acc_train": 0.921074,
+    "acc_val": 0.967913,
+    "tempo_s": 449.679866,
+    "vram_mb": 277.88623
+  }
+}

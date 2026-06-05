@@ -1,0 +1,22 @@
+{
+  "source": "recovered_from_kaggle_notebook_output",
+  "stage": 3,
+  "epochs": 1,
+  "batch_size": 16,
+  "image_size": 224,
+  "source_size": 224,
+  "result": {
+    "tag": "custom_cnn_adamw_1e3",
+    "modelo": "custom_cnn",
+    "modo": "feature_extraction",
+    "otimizador": "adamw",
+    "lr": 0.001,
+    "epoca": 1,
+    "loss_train": 0.651218,
+    "loss_val": 0.398223,
+    "acc_train": 0.768134,
+    "acc_val": 0.854558,
+    "tempo_s": 379.125994,
+    "vram_mb": 554.634277
+  }
+}

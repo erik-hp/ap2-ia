@@ -1,0 +1,22 @@
+{
+  "source": "recovered_from_kaggle_notebook_output",
+  "stage": 3,
+  "epochs": 1,
+  "batch_size": 16,
+  "image_size": 224,
+  "source_size": 224,
+  "result": {
+    "tag": "efficientnet_b0_fine_tuning_adamw_1e4",
+    "modelo": "efficientnet_b0",
+    "modo": "fine_tuning",
+    "otimizador": "adamw",
+    "lr": 0.0001,
+    "epoca": 1,
+    "loss_train": 0.241766,
+    "loss_val": 0.034609,
+    "acc_train": 0.93303,
+    "acc_val": 0.991503,
+    "tempo_s": 570.498954,
+    "vram_mb": 1452.541504
+  }
+}

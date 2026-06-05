@@ -1,0 +1,189 @@
+{
+  "source": "recovered_from_kaggle_notebook_output",
+  "epochs": 1,
+  "batch_size": 16,
+  "image_size": 224,
+  "source_size": 224,
+  "experiments": [
+    {
+      "tag": "resnet50_fine_tuning_sgd_1e2",
+      "args": [
+        "--model",
+        "resnet50",
+        "--mode",
+        "fine_tuning",
+        "--optimizer",
+        "sgd",
+        "--lr",
+        "0.01"
+      ]
+    },
+    {
+      "tag": "efficientnet_b0_fine_tuning_adamw_1e4",
+      "args": [
+        "--model",
+        "efficientnet_b0",
+        "--mode",
+        "fine_tuning",
+        "--optimizer",
+        "adamw",
+        "--lr",
+        "0.0001"
+      ]
+    },
+    {
+      "tag": "mobilenet_v3_large_fine_tuning_adamw_1e4",
+      "args": [
+        "--model",
+        "mobilenet_v3_large",
+        "--mode",
+        "fine_tuning",
+        "--optimizer",
+        "adamw",
+        "--lr",
+        "0.0001"
+      ]
+    },
+    {
+      "tag": "vit_b_16_fine_tuning_adamw_1e4",
+      "args": [
+        "--model",
+        "vit_b_16",
+        "--mode",
+        "fine_tuning",
+        "--optimizer",
+        "adamw",
+        "--lr",
+        "0.0001"
+      ]
+    },
+    {
+      "tag": "resnet50_fine_tuning_adamw_1e4",
+      "args": [
+        "--model",
+        "resnet50",
+        "--mode",
+        "fine_tuning",
+        "--optimizer",
+        "adamw",
+        "--lr",
+        "0.0001"
+      ]
+    },
+    {
+      "tag": "resnet50_fine_tuning_adamw_1e3",
+      "args": [
+        "--model",
+        "resnet50",
+        "--mode",
+        "fine_tuning",
+        "--optimizer",
+        "adamw",
+        "--lr",
+        "0.001"
+      ]
+    },
+    {
+      "tag": "resnet50_fine_tuning_sgd_1e3",
+      "args": [
+        "--model",
+        "resnet50",
+        "--mode",
+        "fine_tuning",
+        "--optimizer",
+        "sgd",
+        "--lr",
+        "0.001"
+      ]
+    },
+    {
+      "tag": "resnet50_fine_tuning_adamw_1e2",
+      "args": [
+        "--model",
+        "resnet50",
+        "--mode",
+        "fine_tuning",
+        "--optimizer",
+        "adamw",
+        "--lr",
+        "0.01"
+      ]
+    },
+    {
+      "tag": "vit_b_16_feature_extraction_adamw_1e3",
+      "args": [
+        "--model",
+        "vit_b_16",
+        "--mode",
+        "feature_extraction",
+        "--optimizer",
+        "adamw",
+        "--lr",
+        "0.001"
+      ]
+    },
+    {
+      "tag": "resnet50_feature_extraction_adamw_1e3",
+      "args": [
+        "--model",
+        "resnet50",
+        "--mode",
+        "feature_extraction",
+        "--optimizer",
+        "adamw",
+        "--lr",
+        "0.001"
+      ]
+    },
+    {
+      "tag": "mobilenet_v3_large_feature_extraction_adamw_1e3",
+      "args": [
+        "--model",
+        "mobilenet_v3_large",
+        "--mode",
+        "feature_extraction",
+        "--optimizer",
+        "adamw",
+        "--lr",
+        "0.001"
+      ]
+    },
+    {
+      "tag": "efficientnet_b0_feature_extraction_adamw_1e3",
+      "args": [
+        "--model",
+        "efficientnet_b0",
+        "--mode",
+        "feature_extraction",
+        "--optimizer",
+        "adamw",
+        "--lr",
+        "0.001"
+      ]
+    },
+    {
+      "tag": "resnet50_fine_tuning_sgd_1e4",
+      "args": [
+        "--model",
+        "resnet50",
+        "--mode",
+        "fine_tuning",
+        "--optimizer",
+        "sgd",
+        "--lr",
+        "0.0001"
+      ]
+    },
+    {
+      "tag": "custom_cnn_adamw_1e3",
+      "args": [
+        "--model",
+        "custom_cnn",
+        "--optimizer",
+        "adamw",
+        "--lr",
+        "0.001"
+      ]
+    }
+  ]
+}
