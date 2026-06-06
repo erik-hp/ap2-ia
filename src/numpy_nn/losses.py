@@ -1,4 +1,4 @@
-"""Funcoes de loss para a MLP implementada apenas com NumPy."""
+"""Funções de loss para a MLP implementada apenas com NumPy."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ import numpy as np
 
 
 def softmax(logits: np.ndarray) -> np.ndarray:
-    """Calcula softmax numericamente estavel para logits 2D."""
+    """Calcula softmax numericamente estável para logits 2D."""
     if logits.ndim != 2:
         raise ValueError("logits must have shape [batch, classes]")
     # Subtrair o maior logit evita overflow em exp(logits).
@@ -17,12 +17,12 @@ def softmax(logits: np.ndarray) -> np.ndarray:
 
 
 def cross_entropy_loss(logits: np.ndarray, y: np.ndarray) -> tuple[float, np.ndarray]:
-    """Retorna CrossEntropy estavel e o gradiente em relacao aos logits.
+    """Retorna CrossEntropy estável e o gradiente em relação aos logits.
 
     :param logits: Matriz ``[batch, classes]``.
-    :param y: Indices inteiros das classes.
-    :return: Tupla ``(loss_media, gradiente_dos_logits)``.
-    :raises ValueError: Se shapes ou indices forem invalidos.
+    :param y: Índices inteiros das classes.
+    :return: Tupla ``(loss_média, gradiente_dos_logits)``.
+    :raises ValueError: Se shapes ou índices forem inválidos.
     """
     y = y.reshape(-1).astype(int)
     if logits.ndim != 2:

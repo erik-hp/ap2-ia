@@ -17,7 +17,7 @@ class SGDMomentum:
         self.velocity = {name: np.zeros_like(value) for name, value in params.items()}
 
     def step(self, params: dict[str, np.ndarray], grads: dict[str, np.ndarray]) -> None:
-        """Atualiza os parametros in-place usando os gradientes informados."""
+        """Atualiza os parâmetros in-place usando os gradientes informados."""
         for name, grad in grads.items():
             if name not in params:
                 raise KeyError(f"Unknown parameter in grads: {name}")
@@ -25,7 +25,7 @@ class SGDMomentum:
                 self.velocity[name] = np.zeros_like(params[name])
             if params[name].shape != grad.shape:
                 raise ValueError(f"Gradient shape for {name} does not match parameter shape")
-            # Momentum acumula uma media exponencial do gradiente e suaviza
-            # atualizacoes muito ruidosas.
+            # Momentum acumula uma média exponencial do gradiente e suaviza
+            # atualizações muito ruidosas.
             self.velocity[name] = self.beta * self.velocity[name] + self.lr * grad
             params[name] -= self.velocity[name]

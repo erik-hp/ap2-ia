@@ -1,4 +1,4 @@
-"""Testes dos criterios de checkpoint do treino."""
+"""Testes dos critérios de checkpoint do treino."""
 
 from train import _is_improved
 

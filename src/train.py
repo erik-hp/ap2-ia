@@ -1,4 +1,11 @@
-"""Ponto de entrada para treinar e registrar experimentos do PathMNIST."""
+"""Ponto de entrada para treinar e registrar experimentos do PathMNIST.
+
+Este arquivo concentra a Etapa 3 (comparação de arquiteturas) e a Etapa 5
+(treinamento final). Ele foi mantido como script único para facilitar a
+correção: os argumentos da linha de comando mostram exatamente quais
+hiperparâmetros foram usados, enquanto os CSV/JSON gerados ficam em
+``experiments/`` como evidências reproduzíveis.
+"""
 
 from __future__ import annotations
 
@@ -18,18 +25,21 @@ from utils import EarlyStopping, Timer, append_result, collect_hardware_info, de
 
 
 def run_epoch(model, loader, criterion, optimizer=None, current_device=None):
-    """Executa uma epoca de treino ou avaliacao.
+    """Executa uma época de treino ou avaliação.
 
     :param model: Modelo PyTorch.
-    :param loader: DataLoader da epoca.
-    :param criterion: Funcao de perda.
-    :param optimizer: Otimizador; ``None`` ativa avaliacao.
-    :param current_device: Dispositivo; quando ausente, e detectado.
-    :return: Tupla ``(loss_media, accuracy)``.
-    :raises ValueError: Se o loader nao produzir amostras.
+    :param loader: DataLoader da época.
+    :param criterion: Função de perda.
+    :param optimizer: Otimizador; ``None`` ativa avaliação.
+    :param current_device: Dispositivo; quando ausente, é detectado.
+    :return: Tupla ``(loss_média, accuracy)``.
+    :raises ValueError: Se o loader não produzir amostras.
     """
     if current_device is None:
         current_device = device()
+    # A mesma função atende treino e validação. Quando existe otimizador,
+    # calcula gradientes e atualiza pesos; quando não existe, apenas mede perda
+    # e acurácia. Isso evita duplicar a lógica de métricas entre splits.
     training = optimizer is not None
     model.train(training)
     total_loss = 0.0
@@ -45,7 +55,7 @@ def run_epoch(model, loader, criterion, optimizer=None, current_device=None):
             logits = model(images)
             loss = criterion(logits, labels)
             if training:
-                # set_to_none=True reduz uso de memoria e evita zerar tensores a mao.
+                # set_to_none=True reduz o uso de memória e evita zerar tensores à mão.
                 optimizer.zero_grad(set_to_none=True)
                 loss.backward()
                 optimizer.step()
@@ -60,14 +70,19 @@ def run_epoch(model, loader, criterion, optimizer=None, current_device=None):
 
 
 def build_model(name: str, mode: str, pretrained: bool = True):
-    """Cria a CNN autoral ou um backbone torchvision."""
+    """Cria a CNN autoral ou um backbone torchvision.
+
+    Esta função é o ponto de ligação entre a rubrica da Etapa 3 e o código:
+    ``custom_cnn`` usa a arquitetura própria em ``src/models/custom_cnn.py``;
+    os demais nomes usam transfer learning em ``src/models/transfer.py``.
+    """
     if name == "custom_cnn":
         return CustomCNN()
     return create_model(name, mode=mode, pretrained=pretrained)
 
 
 def _is_improved(value: float, best: float | None, mode: str) -> bool:
-    """Retorna se uma metrica melhorou segundo ``min`` ou ``max``."""
+    """Retorna se uma métrica melhorou segundo ``min`` ou ``max``."""
     return best is None or (value < best if mode == "min" else value > best)
 
 
@@ -85,6 +100,8 @@ def _wandb_init(args):
 def main():
     """Executa treino, logging CSV/JSON, checkpoint e rastreamento opcional."""
     parser = argparse.ArgumentParser()
+    # Argumentos principais do experimento: modelo, modo de treinamento e
+    # hiperparâmetros que aparecem nas tabelas do relatório.
     parser.add_argument("--model", default="custom_cnn", choices=["custom_cnn", *MODEL_NAMES])
     parser.add_argument("--mode", default="feature_extraction", choices=["feature_extraction", "fine_tuning"])
     parser.add_argument("--optimizer", default="adamw", choices=["sgd", "adamw"])
@@ -123,6 +140,8 @@ def main():
     if args.source_size != 224:
         raise ValueError("Official project rules require --source-size 224 for PyTorch stages.")
 
+    # Reprodutibilidade: todas as execuções PyTorch do projeto usam seed fixa,
+    # e o dispositivo é registrado para explicar diferenças de tempo/VRAM.
     set_seed(args.seed)
     current_device = device()
     wandb_run = _wandb_init(args)
@@ -141,13 +160,17 @@ def main():
         num_workers=args.num_workers,
         augment_policy=args.augment_policy,
     )
+    # A partir daqui entram os blocos exigidos na comparação: carregamento do
+    # modelo, definição da loss e escolha do otimizador.
     model = build_model(args.model, args.mode, pretrained=not args.no_pretrained).to(current_device)
     criterion = nn.CrossEntropyLoss(label_smoothing=args.label_smoothing)
 
+    # Em modelos pré-treinados, ``parameter_groups`` permite usar LR menor no
+    # backbone e LR maior no classificador, prática comum de fine-tuning.
     groups = parameter_groups(model, args.lr, args.mode) if args.model != "custom_cnn" else model.parameters()
     optimizer = SGD(groups, lr=args.lr, momentum=0.9, nesterov=True) if args.optimizer == "sgd" else AdamW(groups, lr=args.lr, weight_decay=1e-4)
 
-    # Opcoes exigidas para a Etapa 5: cosine annealing, label smoothing e early stopping.
+    # Opções exigidas para a Etapa 5: cosine annealing, label smoothing e early stopping.
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs) if args.cosine else None
     stopper = EarlyStopping(patience=args.patience, mode="min") if args.early_stopping else None
     checkpoint_mode = args.checkpoint_mode
@@ -165,6 +188,8 @@ def main():
                 scheduler.step()
 
         vram_mb = torch.cuda.max_memory_allocated() / 1024**2 if torch.cuda.is_available() else 0.0
+        # Cada época vira uma linha CSV. Esses campos são usados depois para
+        # montar as tabelas de comparação e selecionar o melhor modelo.
         epoch_metrics = {
             "tag": args.tag or f"{args.model}_{args.mode}_{args.optimizer}_{args.lr}",
             "modelo": args.model,
@@ -185,6 +210,8 @@ def main():
 
         checkpoint_value = val_loss if args.checkpoint_metric == "val_loss" else val_acc
         if args.checkpoint and _is_improved(checkpoint_value, best_checkpoint_value, checkpoint_mode):
+            # O checkpoint guarda pesos e metadados suficientes para reabrir o
+            # melhor modelo no notebook final e na etapa de XAI.
             best_checkpoint_value = checkpoint_value
             checkpoint_path = Path(args.checkpoint)
             checkpoint_path.parent.mkdir(parents=True, exist_ok=True)
@@ -212,6 +239,9 @@ def main():
             break
 
     if args.evaluation_dir:
+        # Avaliação opcional do split de validação no fim do treino. A avaliação
+        # oficial de teste fica no notebook 05 para garantir que o teste seja
+        # usado apenas uma vez.
         if args.checkpoint and Path(args.checkpoint).exists():
             checkpoint = torch.load(args.checkpoint, map_location=current_device)
             model.load_state_dict(checkpoint["model_state_dict"])

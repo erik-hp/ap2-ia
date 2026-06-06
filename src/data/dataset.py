@@ -1,4 +1,9 @@
-"""Pipelines oficiais do PathMNIST com suporte eficiente ao tamanho 224x224."""
+"""Pipelines oficiais do PathMNIST com suporte eficiente ao tamanho 224x224.
+
+Este modulo comprova a parte de dados da entrega: usa os splits oficiais
+``train``, ``val`` e ``test`` do MedMNIST e, nas etapas PyTorch, carrega a
+versão PathMNIST+ 224x224 sem remontar ou misturar os conjuntos.
+"""
 
 from __future__ import annotations
 
@@ -20,6 +25,8 @@ Split = Literal["train", "val", "test"]
 AugmentPolicy = Literal["none", "basic", "randaugment", "autoaugment"]
 
 PATHMNIST_CLASSES = tuple(label for _, label in sorted(INFO["pathmnist"]["label"].items(), key=lambda item: int(item[0])))
+# Estatísticas do ImageNet são usadas porque os backbones do torchvision foram
+# pré-treinados nesse domínio e esperam essa normalização na entrada.
 IMAGENET_MEAN = (0.485, 0.456, 0.406)
 IMAGENET_STD = (0.229, 0.224, 0.225)
 
@@ -28,10 +35,10 @@ def build_transform(image_size: int = 224, train: bool = False, augment_policy: 
     """Cria o pipeline torchvision usado nas etapas PyTorch.
 
     :param image_size: Altura e largura finais entregues ao modelo.
-    :param train: Ativa transformacoes estocasticas de treino.
-    :param augment_policy: Politica de aumento aplicada somente ao treino.
-    :return: Composicao de transformacoes com normalizacao ImageNet.
-    :raises ValueError: Se ``image_size`` ou ``augment_policy`` forem invalidos.
+    :param train: Ativa transformações estocásticas de treino.
+    :param augment_policy: Política de aumento aplicada somente ao treino.
+    :return: Composição de transformações com normalização ImageNet.
+    :raises ValueError: Se ``image_size`` ou ``augment_policy`` forem inválidos.
     """
     if image_size <= 0:
         raise ValueError("image_size must be positive")
@@ -40,6 +47,8 @@ def build_transform(image_size: int = 224, train: bool = False, augment_policy: 
 
     steps: list[object] = []
     if train:
+        # Augmentations ficam restritas ao treino. Validação e teste devem medir
+        # desempenho em imagens sem transformações aleatórias.
         if augment_policy == "basic":
             steps.extend([transforms.RandomHorizontalFlip(), transforms.RandomRotation(10)])
         elif augment_policy == "randaugment":
@@ -59,15 +68,15 @@ def build_transform(image_size: int = 224, train: bool = False, augment_policy: 
 class MemoryMappedPathMNIST(Dataset):
     """PathMNIST+ oficial extraido em ``.npy`` e acessado sem carregar tudo na RAM.
 
-    O arquivo oficial ``pathmnist_224.npz`` e um ZIP de arrays NumPy. Extrair
+    O arquivo oficial ``pathmnist_224.npz`` é um ZIP de arrays NumPy. Extrair
     esses arrays uma vez permite usar ``mmap_mode='r'`` e carregar apenas as
     imagens solicitadas pelo DataLoader, preservando os splits oficiais.
 
     :param split: Split oficial: ``train``, ``val`` ou ``test``.
-    :param root: Diretorio de cache do dataset.
-    :param transform: Transformacao aplicada a cada imagem PIL.
-    :param download: Baixa e extrai o arquivo oficial quando necessario.
-    :raises FileNotFoundError: Se os dados nao existirem e ``download=False``.
+    :param root: Diretório de cache do dataset.
+    :param transform: Transformação aplicada a cada imagem PIL.
+    :param download: Baixa e extrai o arquivo oficial quando necessário.
+    :raises FileNotFoundError: Se os dados não existirem e ``download=False``.
     """
 
     def __init__(
@@ -112,7 +121,7 @@ class MemoryMappedPathMNIST(Dataset):
             archive.extractall(self.extracted_dir)
 
     def __len__(self) -> int:
-        """Retorna o numero de amostras do split."""
+        """Retorna o número de amostras do split."""
         return int(self.labels.shape[0])
 
     def __getitem__(self, index: int) -> tuple[torch.Tensor | Image.Image, np.ndarray]:
@@ -120,7 +129,7 @@ class MemoryMappedPathMNIST(Dataset):
         image = Image.fromarray(np.asarray(self.images[index]))
         if self.transform is not None:
             image = self.transform(image)
-        # Labels sao pequenos; a copia evita avisos do PyTorch sobre arrays mmap
+        # Labels são pequenos; a cópia evita avisos do PyTorch sobre arrays mmap
         # somente leitura durante o collate.
         return image, np.asarray(self.labels[index]).copy()
 
@@ -138,13 +147,13 @@ def get_dataset(
 
     :param split: Split oficial solicitado.
     :param image_size: Tamanho final entregue ao modelo.
-    :param source_size: Versao oficial do MedMNIST. Nas etapas 2-5 deve ser 224.
-    :param train_transform: Sobrescreve a ativacao de augmentations.
+    :param source_size: Versão oficial do MedMNIST. Nas etapas 2-5 deve ser 224.
+    :param train_transform: Sobrescreve a ativação de augmentations.
     :param download: Baixa o dataset quando ausente.
-    :param augment_policy: Politica de aumento do split de treino.
-    :param root: Diretorio opcional de cache.
+    :param augment_policy: Política de aumento do split de treino.
+    :param root: Diretório opcional de cache.
     :return: Dataset oficial PathMNIST.
-    :raises ValueError: Se ``split`` ou ``source_size`` forem invalidos.
+    :raises ValueError: Se ``split`` ou ``source_size`` forem inválidos.
     """
     if split not in {"train", "val", "test"}:
         raise ValueError("split must be one of: train, val, test")
@@ -154,7 +163,11 @@ def get_dataset(
         train_transform = split == "train"
     transform = build_transform(image_size=image_size, train=train_transform, augment_policy=augment_policy)
     if source_size == 224:
+        # Caminho principal das etapas 2-5: PathMNIST+ oficial 224x224 com
+        # memória mapeada para caber em ambientes como Colab.
         return MemoryMappedPathMNIST(split=split, root=root, transform=transform, download=download)
+    # Caminho mantido para a Etapa 1/validações históricas com imagens menores.
+    # O script de treino bloqueia source_size diferente de 224 nas etapas PyTorch.
     kwargs = {"split": split, "transform": transform, "download": download, "size": source_size, "as_rgb": True}
     if root is not None:
         kwargs["root"] = str(root)
@@ -162,7 +175,7 @@ def get_dataset(
 
 
 def _default_workers() -> int:
-    """Escolhe um numero conservador de workers para Windows e Colab."""
+    """Escolhe um número conservador de workers para Windows e Colab."""
     if os.name == "nt":
         return 0
     return min(2, os.cpu_count() or 0)
@@ -179,15 +192,15 @@ def get_loaders(
 ) -> dict[str, DataLoader]:
     """Cria DataLoaders para os splits oficiais sem remixar dados.
 
-    :param batch_size: Numero de amostras por batch.
+    :param batch_size: Número de amostras por batch.
     :param image_size: Tamanho final entregue ao modelo.
-    :param source_size: Versao oficial do PathMNIST.
+    :param source_size: Versão oficial do PathMNIST.
     :param num_workers: Processos do DataLoader; ``None`` usa valor conservador.
     :param download: Baixa os dados quando ausentes.
-    :param augment_policy: Politica aplicada apenas ao treino.
-    :param root: Diretorio opcional de cache.
-    :return: Dicionario com loaders ``train``, ``val`` e ``test``.
-    :raises ValueError: Se os parametros numericos forem invalidos.
+    :param augment_policy: Política aplicada apenas ao treino.
+    :param root: Diretório opcional de cache.
+    :return: Dicionário com loaders ``train``, ``val`` e ``test``.
+    :raises ValueError: Se os parâmetros numéricos forem inválidos.
     """
     if batch_size <= 0:
         raise ValueError("batch_size must be positive")
@@ -197,6 +210,7 @@ def get_loaders(
     if num_workers < 0:
         raise ValueError("num_workers must be non-negative")
 
+    # pin_memory acelera cópias CPU->GPU quando CUDA está disponível.
     pin_memory = torch.cuda.is_available()
     datasets = {
         "train": get_dataset("train", image_size, source_size, True, download, augment_policy, root),

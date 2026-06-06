@@ -1,4 +1,9 @@
-"""Utilitarios compartilhados para experimentos reproduziveis."""
+"""Utilitários compartilhados para experimentos reproduzíveis.
+
+Funções daqui aparecem em várias etapas: seed global, escolha de dispositivo,
+registro de métricas em CSV/JSON, hardware e early stopping. Centralizar esses
+blocos evita divergência entre notebooks e scripts.
+"""
 
 from __future__ import annotations
 
@@ -28,10 +33,12 @@ RESULT_COLUMNS = [
     "tempo_s",
     "vram_mb",
 ]
+# Cabeçalho único dos CSVs de experimentos. Manter a ordem fixa facilita
+# comparar execuções e importar os resultados no relatório.
 
 
 def _lr_tag(value: object) -> str:
-    """Formata learning rate no mesmo padrao dos manifests."""
+    """Formata learning rate no mesmo padrão dos manifests."""
     try:
         lr = float(value)
     except (TypeError, ValueError):
@@ -46,7 +53,7 @@ def _lr_tag(value: object) -> str:
 
 
 def _infer_result_tag(row: dict[str, object]) -> str:
-    """Infere tag para CSVs antigos que nao tinham essa coluna."""
+    """Infere tag para CSVs antigos que não tinham essa coluna."""
     if row.get("tag"):
         return str(row["tag"])
     model = str(row.get("modelo", "model"))
@@ -59,7 +66,7 @@ def _infer_result_tag(row: dict[str, object]) -> str:
 
 
 def _migrate_result_csv(path: Path) -> bool:
-    """Atualiza CSV antigo para o cabecalho atual sem perder linhas."""
+    """Atualiza CSV antigo para o cabeçalho atual sem perder linhas."""
     if not path.exists() or path.stat().st_size == 0:
         return False
     with path.open("r", newline="", encoding="utf-8") as file:
@@ -77,7 +84,7 @@ def _migrate_result_csv(path: Path) -> bool:
 
 
 def project_root() -> Path:
-    """Retorna a raiz do repositorio a partir de ``src/utils.py``."""
+    """Retorna a raiz do repositório a partir de ``src/utils.py``."""
     return Path(__file__).resolve().parents[1]
 
 
@@ -95,13 +102,13 @@ def set_seed(seed: int = 42) -> None:
 
 
 def device() -> torch.device:
-    """Seleciona CUDA quando disponivel, caso contrario CPU."""
+    """Seleciona CUDA quando disponível; caso contrário, usa CPU."""
     return torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 def append_result(path: str | Path, row: dict[str, object]) -> None:
     """Adiciona uma linha padronizada ao CSV de experimentos."""
-    # Cria o CSV com cabecalho na primeira escrita e apenas adiciona linhas depois.
+    # Cria o CSV com cabeçalho na primeira escrita e apenas adiciona linhas depois.
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     exists = _migrate_result_csv(path)
@@ -113,7 +120,7 @@ def append_result(path: str | Path, row: dict[str, object]) -> None:
 
 
 def save_json(path: str | Path, data: dict[str, object]) -> None:
-    """Salva dicionario como JSON UTF-8 indentado."""
+    """Salva dicionário como JSON UTF-8 indentado."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8") as file:
@@ -121,7 +128,7 @@ def save_json(path: str | Path, data: dict[str, object]) -> None:
 
 
 def collect_hardware_info() -> dict[str, object]:
-    """Coleta informacoes reproduziveis do ambiente e acelerador."""
+    """Coleta informações reproduzíveis do ambiente e do acelerador."""
     info: dict[str, object] = {
         "python": platform.python_version(),
         "platform": platform.platform(),
@@ -144,7 +151,11 @@ def collect_hardware_info() -> dict[str, object]:
 
 
 class Timer:
-    """Context manager para medir tempo decorrido."""
+    """Context manager para medir tempo decorrido.
+
+    Usado por época em ``train.py`` para registrar o custo temporal de cada
+    arquitetura na comparação.
+    """
     def __enter__(self):
         self.start = time.perf_counter()
         return self
@@ -154,7 +165,11 @@ class Timer:
 
 
 class EarlyStopping:
-    """Controla parada antecipada baseada em metrica de validacao."""
+    """Controla parada antecipada baseada em métrica de validação.
+
+    Evita treinar muitas épocas sem melhora e registra uma estratégia comum de
+    regularização/controle experimental para a Etapa 5.
+    """
     def __init__(self, patience: int = 5, mode: str = "min", min_delta: float = 0.0):
         if patience <= 0:
             raise ValueError("patience must be positive")

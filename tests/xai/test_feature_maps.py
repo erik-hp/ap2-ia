@@ -1,4 +1,4 @@
-"""Testes de mapas de ativacao."""
+"""Testes de mapas de ativação."""
 
 from __future__ import annotations
 

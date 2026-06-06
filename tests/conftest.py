@@ -1,4 +1,4 @@
-"""Configuracao compartilhada da suite de testes."""
+"""Configuração compartilhada da suíte de testes."""
 
 from __future__ import annotations
 

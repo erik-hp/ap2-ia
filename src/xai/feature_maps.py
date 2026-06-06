@@ -1,4 +1,9 @@
-"""Helpers para visualizar mapas de ativacao internos."""
+"""Helpers para visualizar mapas de ativação internos.
+
+Feature maps são usados na Etapa 4 para mostrar o que os filtros iniciais da
+CNN detectam. Eles ajudam a explicar se a rede está capturando bordas, texturas
+e padrões locais presentes nas imagens histopatológicas.
+"""
 
 from __future__ import annotations
 
@@ -7,14 +12,17 @@ import torch
 
 
 def capture_first_conv_feature_maps(model: torch.nn.Module, images: torch.Tensor) -> torch.Tensor:
-    """Captura a saida da primeira convolucao usando forward hook temporario."""
-    # Hook captura a saida da primeira camada convolucional sem alterar o modelo.
+    """Captura a saída da primeira convolução usando forward hook temporário."""
+    # Usamos a primeira Conv2d porque ela mostra filtros de baixo nível, mais
+    # fáceis de interpretar visualmente em um relatório.
     first_conv = next((module for module in model.modules() if isinstance(module, torch.nn.Conv2d)), None)
     if first_conv is None:
         raise ValueError("Model has no Conv2d layer for feature-map visualization")
     captured = {}
 
     def hook(_, __, output):
+        # O hook recebe a saída da camada durante o forward; detach/cpu evita
+        # manter grafo de gradientes ou ocupar memória de GPU sem necessidade.
         captured["maps"] = output.detach().cpu()
 
     handle = first_conv.register_forward_hook(hook)
@@ -23,6 +31,7 @@ def capture_first_conv_feature_maps(model: torch.nn.Module, images: torch.Tensor
         with torch.no_grad():
             model(images)
     finally:
+        # Remove o hook para não afetar outros forwards feitos depois.
         handle.remove()
     if "maps" not in captured:
         raise RuntimeError("The forward hook did not capture feature maps")
@@ -30,8 +39,8 @@ def capture_first_conv_feature_maps(model: torch.nn.Module, images: torch.Tensor
 
 
 def plot_16_feature_maps(feature_maps: torch.Tensor, image_index: int = 0, max_maps: int = 16):
-    """Plota ate 16 mapas de ativacao em uma grade 4x4."""
-    # O enunciado pede grid de 16 filtros e titulo com o indice de cada filtro.
+    """Plota até 16 mapas de ativação em uma grade 4x4."""
+    # O enunciado pede grid de 16 filtros e título com o índice de cada filtro.
     if feature_maps.ndim != 4:
         raise ValueError("feature_maps must have shape [batch, channels, height, width]")
     if image_index < 0:

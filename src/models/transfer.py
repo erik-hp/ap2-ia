@@ -1,4 +1,9 @@
-"""Fabrica de modelos para transfer learning com backbones do torchvision."""
+"""Fábrica de modelos para transfer learning com backbones do torchvision.
+
+Aqui ficam as arquiteturas comparadas na Etapa 3: ResNet50, EfficientNet-B0,
+MobileNetV3 Large e ViT-B/16. Todas recebem uma nova camada final com nove
+saídas, uma para cada classe do PathMNIST.
+"""
 
 from __future__ import annotations
 
@@ -12,12 +17,13 @@ MODEL_NAMES = ("resnet50", "efficientnet_b0", "mobilenet_v3_large", "vit_b_16")
 
 
 def _set_trainable(model: nn.Module, trainable: bool) -> None:
-    # Liga/desliga o calculo de gradientes de todos os parametros do backbone.
+    # Liga/desliga o cálculo de gradientes de todos os parâmetros do backbone.
     for param in model.parameters():
         param.requires_grad = trainable
 
 
 def _build_torchvision_model(factory, weights):
+    """Carrega um modelo torchvision e faz fallback se os pesos não baixarem."""
     try:
         return factory(weights=weights)
     except Exception as exc:
@@ -32,7 +38,11 @@ def _build_torchvision_model(factory, weights):
 
 
 def create_model(name: str, num_classes: int = 9, pretrained: bool = True, mode: str = "feature_extraction") -> nn.Module:
-    """Cria backbone torchvision com classificador adaptado ao PathMNIST."""
+    """Cria backbone torchvision com classificador adaptado ao PathMNIST.
+
+    ``feature_extraction`` congela o backbone e treina só a camada final.
+    ``fine_tuning`` libera todos os pesos para ajuste no PathMNIST.
+    """
     if mode not in {"feature_extraction", "fine_tuning"}:
         raise ValueError("mode must be 'feature_extraction' or 'fine_tuning'")
     if num_classes <= 0:
@@ -42,6 +52,7 @@ def create_model(name: str, num_classes: int = 9, pretrained: bool = True, mode:
 
     if name == "resnet50":
         # Cada arquitetura tem um nome diferente para o classificador final.
+        # Por isso cada bloco abaixo substitui a camada correta por Linear(..., 9).
         weights = models.ResNet50_Weights.DEFAULT if pretrained else None
         model = _build_torchvision_model(models.resnet50, weights)
         in_features = model.fc.in_features
@@ -70,7 +81,7 @@ def create_model(name: str, num_classes: int = 9, pretrained: bool = True, mode:
 
     if mode == "feature_extraction":
         # No modo feature extraction, congela o backbone e treina apenas a
-        # camada final substituida por Linear(..., 9).
+        # camada final substituída por Linear(..., 9).
         _set_trainable(model, False)
         for param in classifier.parameters():
             param.requires_grad = True
@@ -78,7 +89,12 @@ def create_model(name: str, num_classes: int = 9, pretrained: bool = True, mode:
 
 
 def parameter_groups(model: nn.Module, lr_base: float, mode: str) -> list[dict[str, object]]:
-    """Separa backbone e classificador para learning rates diferentes."""
+    """Separa backbone e classificador para learning rates diferentes.
+
+    No fine-tuning, o backbone pré-treinado recebe ``lr_base / 10`` para não
+    destruir rapidamente representações aprendidas no ImageNet. O classificador
+    novo recebe ``lr_base`` porque começa aleatório e precisa aprender mais.
+    """
     if lr_base <= 0:
         raise ValueError("lr_base must be positive")
     if mode not in {"feature_extraction", "fine_tuning"}:
