@@ -44,5 +44,7 @@ O notebook avaliou o conjunto de teste uma unica vez e registrou:
 ## Checkpoint
 
 O checkpoint final foi recuperado para `checkpoints/final/best_final_model.pt`.
-Arquivos `.pt` continuam ignorados pelo Git por tamanho; para a entrega, envie o
-arquivo junto ao material final ou informe um link de download no README/relatorio.
+Arquivos `.pt` continuam ignorados pelo Git por tamanho. O checkpoint final está
+disponível em:
+
+https://drive.google.com/drive/folders/1hI9ir_JGPJxQYuY1zgNgXdfsCyJy-HD8?usp=sharing

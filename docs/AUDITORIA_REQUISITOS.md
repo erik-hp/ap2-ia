@@ -18,7 +18,7 @@ Auditoria baseada no PDF integral da atividade e no texto complementar fornecido
 | Scheduler, regularizacoes e augmentacao avancada | `src/train.py`, `src/data/dataset.py`, notebook 05 |
 | Feature Maps e Grad-CAM | `src/xai/`, notebook 04 |
 | Teste final bloqueado contra reexecucao acidental | notebook 05 |
-| Logs CSV/JSON, hardware e checkpoints | `src/utils.py`, `src/train.py`, notebooks, `experiments/hardware.json`, `docs/HARDWARE.md` |
+| Logs CSV/JSON, hardware e checkpoints | `src/utils.py`, `src/train.py`, notebooks, `experiments/hardware.json`, `docs/HARDWARE.md`, link no `README.md` |
 | Checkpoint configuravel por metrica/modo | argumentos `--checkpoint-metric` e `--checkpoint-mode` |
 | WandB opcional | argumento `--use-wandb` |
 | Testes unitarios e CI | `tests/`, `pytest.ini`, `.github/workflows/tests.yml` |
@@ -27,15 +27,12 @@ Auditoria baseada no PDF integral da atividade e no texto complementar fornecido
 ## Evidencias ainda pendentes
 
 - A celula final do notebook 02 deve ser reexecutada com o loader oficial 224x224. O codigo do notebook ja usa `source_size=224`, mas o JSON versionado ainda e historico e esta marcado como `criterion_met: false`.
-- Disponibilizar o checkpoint final ou link de download no relatorio/entrega, pois arquivos `.pt` nao sao versionados no Git.
-
 ## Itens obrigatoriamente manuais
 
 - Preencher nomes dos integrantes.
 - Escrever discussao histologica e conclusoes cientificas pela equipe.
 - Produzir artigo SBC/IEEE com no maximo 12 paginas sem referencias.
 - Incluir pelo menos oito referencias, sendo tres artigos originais e MedMNIST v2 obrigatorio.
-- Disponibilizar checkpoint final ou link de download.
 - Preparar todos os integrantes para explicar qualquer parte do codigo na apresentacao oral.
 
 ## Observacao metodologica critica

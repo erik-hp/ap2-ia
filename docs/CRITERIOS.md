@@ -16,7 +16,7 @@ Este arquivo liga cada exigencia da rubrica aos arquivos do projeto. Os resultad
 - Testes: `tests/`, `pytest.ini` e `.github/workflows/tests.yml`.
 - Hardware: documentado em `docs/HARDWARE.md` e `experiments/hardware.json`; os logs salvos registram tempo e VRAM.
 - Logs de treino: `experiments/results.csv`, `experiments/stage01_numpy/*.csv`, `experiments/final/*.csv`.
-- Checkpoints: `checkpoints/stage03/*.pt` e `checkpoints/final/best_final_model.pt`.
+- Checkpoints: `checkpoints/stage03/*.pt`, `checkpoints/final/best_final_model.pt` e link público no `README.md`.
 - Figuras: `outputs/figures/*.png` e `outputs/xai/*.png`.
 - Rastreamento avancado opcional: `src/train.py --use-wandb`.
 

@@ -164,8 +164,11 @@ pytest
 ## Observações sobre checkpoints
 
 Arquivos `.pt` podem ficar grandes e normalmente não são versionados no Git.
-Quando o checkpoint final for exigido, ele deve acompanhar os demais arquivos da
-entrega.
+O checkpoint final do melhor modelo está disponível no Google Drive:
+
+https://drive.google.com/drive/folders/1hI9ir_JGPJxQYuY1zgNgXdfsCyJy-HD8?usp=sharing
+
+Arquivo esperado: `checkpoints/final/best_final_model.pt`.
 
 ## Declaração de uso de IA generativa
 
