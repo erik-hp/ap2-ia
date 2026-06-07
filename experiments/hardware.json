@@ -1,0 +1,50 @@
+{
+  "summary": "Ambientes de nuvem usados nas execuções do projeto.",
+  "platforms": [
+    "Google Colab",
+    "Kaggle Notebooks"
+  ],
+  "accelerator": {
+    "gpu_model": "NVIDIA Tesla T4",
+    "vram_total_gb_approx": 16,
+    "notes": "A disponibilidade de GPU variou conforme o ambiente gratuito. As execuções registradas usaram aceleração por GPU Tesla T4 nas etapas com PyTorch."
+  },
+  "software_stack": {
+    "language": "Python",
+    "main_libraries": [
+      "NumPy",
+      "PyTorch",
+      "Torchvision",
+      "MedMNIST",
+      "Matplotlib",
+      "scikit-learn"
+    ]
+  },
+  "reproducibility": {
+    "global_seed": 42,
+    "dataset": "PathMNIST / PathMNIST+",
+    "splits": [
+      "train",
+      "val",
+      "test"
+    ]
+  },
+  "stage_usage": {
+    "stage_1_numpy_mlp": "Execução leve em CPU/ambiente de notebook; usou PathMNIST 28x28 para a MLP NumPy.",
+    "stage_2_pytorch_validation": "Execução em ambiente de notebook com PyTorch para validar a equivalência da MLP.",
+    "stage_3_model_comparison": "Execuções em Google Colab/Kaggle com GPU NVIDIA Tesla T4; tempo e pico de VRAM registrados em experiments/stage03_best_by_run.csv.",
+    "stage_4_xai": "Geração de Feature Maps e Grad-CAM a partir do modelo final, em ambiente de notebook com suporte a PyTorch.",
+    "stage_5_final_training": "Treinamento final em GPU NVIDIA Tesla T4; tempo e pico de VRAM registrados em experiments/final/final_training_history.csv."
+  },
+  "recorded_metrics": {
+    "stage_3_max_recorded_vram_mb": 3284.887695,
+    "stage_3_longest_recorded_epoch_s": 3789.365741,
+    "stage_5_max_recorded_vram_mb": 1653.796875,
+    "stage_5_average_epoch_time_s": 1017.2157168089998
+  },
+  "evidence_files": [
+    "experiments/stage03_best_by_run.csv",
+    "experiments/final/final_training_history.csv",
+    "docs/HARDWARE.md"
+  ]
+}

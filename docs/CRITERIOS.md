@@ -14,7 +14,7 @@ Este arquivo liga cada exigencia da rubrica aos arquivos do projeto. Os resultad
 - Seeds: `utils.set_seed(42)` sincroniza `random`, `numpy` e `torch`.
 - Dependencias: `requirements.txt` e `requirements-colab.txt`.
 - Testes: `tests/`, `pytest.ini` e `.github/workflows/tests.yml`.
-- Hardware: deve ser documentado no relatorio. Os logs salvos registram tempo e VRAM, mas `experiments/hardware.json` nao esta versionado.
+- Hardware: documentado em `docs/HARDWARE.md` e `experiments/hardware.json`; os logs salvos registram tempo e VRAM.
 - Logs de treino: `experiments/results.csv`, `experiments/stage01_numpy/*.csv`, `experiments/final/*.csv`.
 - Checkpoints: `checkpoints/stage03/*.pt` e `checkpoints/final/best_final_model.pt`.
 - Figuras: `outputs/figures/*.png` e `outputs/xai/*.png`.

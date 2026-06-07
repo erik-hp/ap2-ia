@@ -56,6 +56,7 @@ execução etapa por etapa.
 ## Arquivos de apoio
 
 - Reprodutibilidade, seed, hardware e CSV: `src/utils.py`
+- Hardware utilizado nas execuções: `docs/HARDWARE.md` e `experiments/hardware.json`
 - Exportação de métricas e matriz de confusão: `src/evaluate.py`
 - Auditoria de requisitos: `docs/AUDITORIA_REQUISITOS.md`
 - Texto-base do relatório: `docs/RELATORIO_MODELO.md`

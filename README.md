@@ -82,6 +82,8 @@ artefatos gerados.
 - O arquivo oficial `pathmnist_224.npz` é extraído em arrays `.npy` e lido com
   memória mapeada, evitando carregar todo o dataset na RAM.
 - Os resultados são salvos em CSV/JSON para permitir auditoria posterior.
+- O hardware utilizado está documentado em `docs/HARDWARE.md` e
+  `experiments/hardware.json`.
 
 ## Como instalar
 
@@ -130,6 +132,7 @@ checkpoint final salvo pelo treinamento final.
 ## Documentos de apoio
 
 - `docs/MAPA_DO_CODIGO.md`: guia rápido de onde está cada parte do projeto.
+- `docs/HARDWARE.md`: ambiente computacional usado nas etapas do projeto.
 - `docs/CRITERIOS.md`: mapeamento dos critérios da atividade.
 - `docs/AUDITORIA_REQUISITOS.md`: auditoria de conformidade e pendências.
 - `docs/RESULTADOS_ETAPAS_01_02.md`: resumo das etapas 1 e 2.
