@@ -6,9 +6,17 @@ serve como evidência complementar para o relatório.
 ## Ambiente
 
 As execuções foram realizadas em ambientes de notebook em nuvem, principalmente
-Google Colab e Kaggle Notebooks, conforme disponibilidade de GPU. As etapas com
-modelos PyTorch utilizaram aceleração por GPU NVIDIA Tesla T4, com
-aproximadamente 16 GB de VRAM.
+Google Colab e Kaggle Notebooks, conforme disponibilidade de GPU. Como esses
+ambientes gratuitos podem variar entre sessões, CPU e RAM são descritos pelo
+perfil do ambiente utilizado, e os valores de GPU/VRAM são documentados a partir
+das execuções registradas.
+
+| Recurso | Descrição documentada |
+|---|---|
+| CPU | vCPU x86_64 fornecida pelo ambiente Google Colab/Kaggle. |
+| RAM | Memória RAM de sessão gratuita em notebook de nuvem, aproximadamente entre 12 GB e 16 GB conforme disponibilidade do ambiente. |
+| GPU | NVIDIA Tesla T4 nas etapas com PyTorch. |
+| VRAM | Aproximadamente 16 GB de VRAM total na Tesla T4. |
 
 ## Uso por etapa
 

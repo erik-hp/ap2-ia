@@ -5,6 +5,8 @@
     "Kaggle Notebooks"
   ],
   "accelerator": {
+    "cpu": "vCPU x86_64 fornecida pelo ambiente Google Colab/Kaggle",
+    "ram_gb_approx": "12-16, conforme disponibilidade da sessão gratuita",
     "gpu_model": "NVIDIA Tesla T4",
     "vram_total_gb_approx": 16,
     "notes": "A disponibilidade de GPU variou conforme o ambiente gratuito. As execuções registradas usaram aceleração por GPU Tesla T4 nas etapas com PyTorch."

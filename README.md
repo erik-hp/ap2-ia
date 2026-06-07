@@ -83,7 +83,7 @@ artefatos gerados.
   memória mapeada, evitando carregar todo o dataset na RAM.
 - Os resultados são salvos em CSV/JSON para permitir auditoria posterior.
 - O hardware utilizado está documentado em `docs/HARDWARE.md` e
-  `experiments/hardware.json`.
+  `experiments/hardware.json`, incluindo CPU, GPU, RAM e VRAM.
 
 ## Como instalar
 
